@@ -54,14 +54,20 @@ function module.TeleportPlayerToBattleArea(player)
 	module.TeleportPlayer(module.BattleAreaID, player)
 end
 
+function module.SetPartTransparency(part, amount)
+	part.Transparency = amount
+end
+
+function module.GetPartTransparency(part)
+	return part.Transparency
+end
+
 function module.TogglePartTransparency(part, amount)
-	
-	if part.Transparency == 1 then
-		part.Transparency = amount
+	if module.GetPartTransparency(part) == 1 then
+		module.SetPartTransparency(part, amount)
 	else
-		part.Transparency = 1
+		module.SetPartTransparency(part, 1)
 	end
-	
 end
 
 
@@ -233,13 +239,17 @@ end
 
 function module.ToggleInventory()
 	local inventoryGui = game.Players.LocalPlayer.PlayerGui:FindFirstChild("InventoryGui")
+	local inventoryButtonGui = game.Players.LocalPlayer.PlayerGui:FindFirstChild("InventoryButtonGui")
+	local inventoryButton = inventoryButtonGui.InventoryButton
 
 	if inventoryGui then
 
 		if inventoryGui.Enabled == true then
 			inventoryGui.Enabled = false
+			module.SetPartTransparency(inventoryButton, 0.2)
 		else
 			inventoryGui.Enabled = true
+			module.SetPartTransparency(inventoryButton, 0)
 		end
 
 	end
