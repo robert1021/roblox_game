@@ -1,4 +1,5 @@
 local module = {
+	["startAreaId"] = 17872213831,
 	["BattleAreaID"] = 17872891022
 }
 
