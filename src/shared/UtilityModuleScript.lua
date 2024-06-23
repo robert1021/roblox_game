@@ -231,4 +231,19 @@ function module.GetDataStoreKey(player)
 	return "PlayerData_" .. module.GetPlayerUserId(player)
 end
 
+function module.ToggleInventory()
+	local inventoryGui = game.Players.LocalPlayer.PlayerGui:FindFirstChild("InventoryGui")
+
+	if inventoryGui then
+
+		if inventoryGui.Enabled == true then
+			inventoryGui.Enabled = false
+		else
+			inventoryGui.Enabled = true
+		end
+
+	end
+
+end
+
 return module
