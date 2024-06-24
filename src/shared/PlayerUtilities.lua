@@ -19,6 +19,10 @@ function module.DisablePlayerMovement(player)
     humanoid.RootPart.Anchored = true
 end
 
+function module.GetLocalPlayer()
+    return game.Players.LocalPlayer
+end
+
 
 
 
