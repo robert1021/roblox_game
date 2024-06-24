@@ -257,4 +257,11 @@ function module.ToggleInventory()
 
 end
 
+function module.PlayLevelUpSound()
+	local ReplicatedStorage = game:GetService("ReplicatedStorage")
+	local sound = ReplicatedStorage.Sounds.LevelUp
+
+	sound:Play()
+end
+
 return module

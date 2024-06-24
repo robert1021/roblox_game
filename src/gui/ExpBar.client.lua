@@ -1,5 +1,6 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local utility = require(ReplicatedStorage.UtilityModuleScript)
 local playerUtilities = require(ReplicatedStorage.PlayerUtilities)
 local player = playerUtilities.GetLocalPlayer()
 local humanoid = playerUtilities.GetHumanoidFromPlayer(player)
@@ -23,6 +24,7 @@ end)
 levelUpRemoteEvent.OnClientEvent:Connect(function(level)
     levelText.Text = "Level " .. level
     -- Do some fancy things on screen
+    utility.PlayLevelUpSound()
 end)
 
 

@@ -111,8 +111,17 @@ end
 function module.CalculateCurrentLevelWithExp(exp)
     local currentIndex = 0
     for i, v in pairs(module.levels) do
-        
-       print(i)
+        currentIndex += 1
+
+        if exp > module["levels"][100] then
+            return 100
+        elseif exp == v then
+            return i
+        elseif exp > v then
+            continue
+        elseif exp < v then
+            return i - 1
+        end
     end
 
 end

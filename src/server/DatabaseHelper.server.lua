@@ -156,7 +156,6 @@ end
 
 Players.PlayerAdded:Connect(function(player)
 	local data = loadPlayerData(player)
-	print(data)
 
 	if data == nil then
 		createPlayerData(player)
@@ -180,19 +179,16 @@ addExpRemoteEvent.OnServerEvent:Connect(function(player, exp)
 
 		addPlayerExp(player, exp)
 
+		local newLevel = expTable.CalculateCurrentLevelWithExp(playerExp + exp)
 
-		if (playerExp + exp) > expTable[playerLevel] then
-			-- print("level up..")
-			-- addPlayerLevel(player, level)
-			-- levelUpRemoteEvent:FireClient(player, level)
+		if newLevel > playerLevel then
+			
+			addPlayerLevel(player, newLevel - playerLevel)
+			levelUpRemoteEvent:FireClient(player, newLevel)
 		end
 
 	end
 
-	print(exp)
-	-- level up player if meets requirements
-	-- local level = 2
-	-- levelUpRemoteEvent:FireClient(player, level)
 end)
 
 
