@@ -6,6 +6,10 @@ local weaponShopAreaRemoveEvent = ReplicatedStorage.WeaponShopAreaRemoteEvent
 local travelingMerchantShopAreaRemoveEvent = ReplicatedStorage.TravelingMerchantShopAreaRemoteEvent
 local afkAreaRemoteEvent = ReplicatedStorage.AFKAreaRemoteEvent
 local utility = require(ReplicatedStorage.UtilityModuleScript)
+local playerUtilities = require(ReplicatedStorage.PlayerUtilities)
+
+local addExpRemoteEvent = ReplicatedStorage.AddExpRemoteEvent
+
 
 -- Events
 

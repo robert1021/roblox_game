@@ -5,6 +5,14 @@ local Players = game:GetService("Players")
 
 local utility = require(ReplicatedStorage.UtilityModuleScript)
 
+-- Remote events
+local addExpRemoteEvent = ReplicatedStorage.AddExpRemoteEvent
+local levelUpRemoteEvent = ReplicatedStorage.LevelUpRemoteEvent
+local setLevelRemoteEvent = ReplicatedStorage.SetLevelRemoteEvent
+
+-- Remote Functions
+
+
 
 -- Functions
 
@@ -147,13 +155,53 @@ end
 -- Events
 
 Players.PlayerAdded:Connect(function(player)
-	
-	if loadPlayerData(player) == nil then
+	local data = loadPlayerData(player)
+	print(data)
+
+	if data == nil then
 		createPlayerData(player)
+
+	else
+		setLevelRemoteEvent:FireClient(player, data.level)
+		
+
 	end
 	
-	
 end)
+
+
+addExpRemoteEvent.OnServerEvent:Connect(function(player, exp)
+	local data = loadPlayerData(player)
+
+	if data ~= nil then
+		local expTable = require(ReplicatedStorage.ExpTable)
+		local playerExp = data.exp
+		local playerLevel = data.level
+
+		addPlayerExp(player, exp)
+
+
+		if (playerExp + exp) > expTable[playerLevel] then
+			-- print("level up..")
+			-- addPlayerLevel(player, level)
+			-- levelUpRemoteEvent:FireClient(player, level)
+		end
+
+	end
+
+	print(exp)
+	-- level up player if meets requirements
+	-- local level = 2
+	-- levelUpRemoteEvent:FireClient(player, level)
+end)
+
+
+
+
+
+-- Remote Functions
+
+
 
 
 
