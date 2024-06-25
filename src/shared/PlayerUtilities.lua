@@ -23,6 +23,15 @@ function module.GetLocalPlayer()
     return game.Players.LocalPlayer
 end
 
+function module.GetInventoryGui()
+    return game.Players.LocalPlayer.PlayerGui:FindFirstChild("InventoryGui")
+end
+
+function module.GetInventoryGoldTextLabel()
+    local inventoryGui = module.GetInventoryGui()
+    return inventoryGui.Frame.GoldFrame.Amount
+end
+
 
 
 

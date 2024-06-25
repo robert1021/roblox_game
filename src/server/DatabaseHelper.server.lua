@@ -10,7 +10,9 @@ local addExpRemoteEvent = ReplicatedStorage.AddExpRemoteEvent
 local levelUpRemoteEvent = ReplicatedStorage.LevelUpRemoteEvent
 local setLevelRemoteEvent = ReplicatedStorage.SetLevelRemoteEvent
 local updateExpBarCompletionRemoteEvent = ReplicatedStorage.UpdateExpBarCompletionRemoteEvent
-
+local addPlayerGoldRemoteEvent = ReplicatedStorage.AddPlayerGoldRemoteEvent
+local removePlayerGoldRemoteEvent = ReplicatedStorage.RemovePlayerGoldRemoteEvent
+local updatePlayerGoldInventoryRemoteEvent = ReplicatedStorage.UpdatePlayerGoldInventoryRemoteEvent
 -- Remote Functions
 
 
@@ -94,6 +96,24 @@ local function addPlayerGold(player, amount)
 		print("Added " .. tostring(amount) .. " gold to " .. utility.GetPlayerName(player))
 	else
 		warn("Failed to add gold to player:", utility.GetPlayerName(player))
+	end
+end
+
+
+local function removePlayerGold(player, amount)
+	
+	local success, results = pcall(function()
+		return PlayerDataStore:UpdateAsync(utility.GetDataStoreKey(player), function()
+			local data = loadPlayerData(player)
+			data.gold = data.gold - amount
+			return data
+		end)
+	end)
+	
+	if success then
+		print("Removed " .. tostring(amount) .. " gold from " .. utility.GetPlayerName(player))
+	else
+		warn("Failed to remove gold from player:", utility.GetPlayerName(player))
 	end
 end
 
@@ -199,6 +219,25 @@ addExpRemoteEvent.OnServerEvent:Connect(function(player, exp)
 
 end)
 
+
+addPlayerGoldRemoteEvent.OnServerEvent:Connect(function(player, amount)
+	local data = loadPlayerData(player)
+
+	if data ~= nil then
+		addPlayerGold(player, amount)
+		updatePlayerGoldInventoryRemoteEvent:FireClient(getPlayerGold(player))
+	end
+end)
+
+
+removePlayerGoldRemoteEvent.OnServerEvent:Connect(function(player, amount)
+	local data = loadPlayerData(player)
+
+	if data ~= nil then
+		removePlayerGold(player, amount)
+		updatePlayerGoldInventoryRemoteEvent:FireClient(getPlayerGold(player))
+	end
+end)
 
 
 
