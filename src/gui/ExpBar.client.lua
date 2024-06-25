@@ -11,9 +11,8 @@ local levelText = expFrame.Level
 local levelUpRemoteEvent = ReplicatedStorage.LevelUpRemoteEvent
 local setLevelRemoteEvent = ReplicatedStorage.SetLevelRemoteEvent
 
--- Events
-
-
+-- Remote Event variables
+local updateExpBarCompletionRemoteEvent = ReplicatedStorage.UpdateExpBarCompletionRemoteEvent
 
 -- Listen for event from database handler
 
@@ -25,6 +24,11 @@ levelUpRemoteEvent.OnClientEvent:Connect(function(level)
     levelText.Text = "Level " .. level
     -- Do some fancy things on screen
     utility.PlayLevelUpSound()
+end)
+
+updateExpBarCompletionRemoteEvent.OnClientEvent:Connect(function(percent)
+    local size = math.clamp(percent / 100, 0, 1)
+    expBar.Size = UDim2.new(size, 0, 1, 0)
 end)
 
 

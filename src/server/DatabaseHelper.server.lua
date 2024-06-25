@@ -9,6 +9,7 @@ local utility = require(ReplicatedStorage.UtilityModuleScript)
 local addExpRemoteEvent = ReplicatedStorage.AddExpRemoteEvent
 local levelUpRemoteEvent = ReplicatedStorage.LevelUpRemoteEvent
 local setLevelRemoteEvent = ReplicatedStorage.SetLevelRemoteEvent
+local updateExpBarCompletionRemoteEvent = ReplicatedStorage.UpdateExpBarCompletionRemoteEvent
 
 -- Remote Functions
 
@@ -162,8 +163,11 @@ Players.PlayerAdded:Connect(function(player)
 
 	else
 		setLevelRemoteEvent:FireClient(player, data.level)
+		-- Get the percent complete of current level to update the exp bar completion
+		local expTable = require(ReplicatedStorage.ExpTable)
+		local percent = expTable.CalculatePercentLevelComplete(data.level, data.exp)
+		updateExpBarCompletionRemoteEvent:FireClient(player, percent)
 		
-
 	end
 	
 end)
@@ -186,6 +190,10 @@ addExpRemoteEvent.OnServerEvent:Connect(function(player, exp)
 			addPlayerLevel(player, newLevel - playerLevel)
 			levelUpRemoteEvent:FireClient(player, newLevel)
 		end
+		
+		-- Get the percent complete of current level to update the exp bar completion
+		local percent = expTable.CalculatePercentLevelComplete(getPlayerLevel(player), playerExp + exp)
+		updateExpBarCompletionRemoteEvent:FireClient(player, percent)
 
 	end
 

@@ -126,4 +126,12 @@ function module.CalculateCurrentLevelWithExp(exp)
 
 end
 
+function module.CalculatePercentLevelComplete(playerLevel, playerExp)
+    local expCurrentLevelReq = module["levels"][playerLevel]
+    local nextLevel = playerLevel + 1
+    local expNextLevelReq = module["levels"][nextLevel]
+
+    return (playerExp - expCurrentLevelReq)  / (expNextLevelReq - expCurrentLevelReq) * 100
+end
+
 return module
