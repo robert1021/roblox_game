@@ -3,7 +3,7 @@ local RunService = game:GetService("RunService")
 
 
 local utility = require(ReplicatedStorage.UtilityModuleScript)
-local potionShopButton = game.Players.LocalPlayer.PlayerGui:FindFirstChild("PotionShopButtonGui").ShopButton
+local potionShopButton = utility.GetPotionShopButton()
 local potionShopCloseButton = game.Players.LocalPlayer.PlayerGui:FindFirstChild("PotionShopGui").Frame.CloseButton
 
 
@@ -28,3 +28,6 @@ RunService.RenderStepped:Connect(function()
 		end
 	end
 end)
+
+
+utility.animateShopButton(potionShopButton)

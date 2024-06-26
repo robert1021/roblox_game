@@ -187,6 +187,7 @@ Players.PlayerAdded:Connect(function(player)
 		local expTable = require(ReplicatedStorage.ExpTable)
 		local percent = expTable.CalculatePercentLevelComplete(data.level, data.exp)
 		updateExpBarCompletionRemoteEvent:FireClient(player, percent)
+		updatePlayerGoldInventoryRemoteEvent:FireClient(player, getPlayerGold(player))
 		
 	end
 	
@@ -225,7 +226,7 @@ addPlayerGoldRemoteEvent.OnServerEvent:Connect(function(player, amount)
 
 	if data ~= nil then
 		addPlayerGold(player, amount)
-		updatePlayerGoldInventoryRemoteEvent:FireClient(getPlayerGold(player))
+		updatePlayerGoldInventoryRemoteEvent:FireClient(player, getPlayerGold(player))
 	end
 end)
 
@@ -235,7 +236,7 @@ removePlayerGoldRemoteEvent.OnServerEvent:Connect(function(player, amount)
 
 	if data ~= nil then
 		removePlayerGold(player, amount)
-		updatePlayerGoldInventoryRemoteEvent:FireClient(getPlayerGold(player))
+		updatePlayerGoldInventoryRemoteEvent:FireClient(player, getPlayerGold(player))
 	end
 end)
 
