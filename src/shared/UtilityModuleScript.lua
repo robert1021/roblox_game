@@ -45,16 +45,6 @@ function module.GetPlayerUserId(player)
 	return player.UserId
 end
 
-function module.TeleportPlayer(areaID, player)
-	local TeleportService = game:GetService("TeleportService")
-	TeleportService:Teleport(areaID, player)
-	
-end
-
-function module.TeleportPlayerToBattleArea(player)
-	module.TeleportPlayer(module.BattleAreaID, player)
-end
-
 function module.SetPartTransparency(part, amount)
 	part.Transparency = amount
 end
@@ -290,6 +280,22 @@ function module.animateShopButton(button)
 	wait(addWait)
 	module.animateShopButton(button)
 	
+end
+
+function module.GetIsTownArea()
+	if game.PlaceId == module.startAreaId then
+		return true
+	else
+		return false
+	end
+end
+
+function module.GetIsBattleArea()
+	if game.PlaceId == module.BattleAreaID then
+		return true
+	else
+		return false
+	end
 end
 
 return module
