@@ -1,31 +1,36 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local utility = require(ReplicatedStorage.UtilityModuleScript)
+local fightZoneUtilities = require(ReplicatedStorage.FightZoneUtilities)
 local playerUtilities = require(ReplicatedStorage.PlayerUtilities)
-local fightZoneRemoteEvent = ReplicatedStorage.FightZoneRemoteEvent
-local readyButton = utility.GetFightZoneReadyButtonGui().TextButton :: TextButton
-local unreadyButton = utility.GetFightZoneUnreadyButtonGui().TextButton :: TextButton
+local fightZoneFFA1RemoteEvent = ReplicatedStorage.FightZoneFFA1RemoteEvent
+local fightZoneFFA1ReadyRemoteEvent = ReplicatedStorage.FightZoneFFA1ReadyRemoteEvent
+local fightZoneFFA1UnreadyRemoteEvent = ReplicatedStorage.FightZoneFFA1UnreadyRemoteEvent
+local fightZoneFFA1ReadyButton = fightZoneUtilities.GetFightZoneFFA1ReadyButtonGui().TextButton :: TextButton
+local fightZoneFFA1UnreadyButton = fightZoneUtilities.GetFightZoneFFA1UnreadyButtonGui().TextButton :: TextButton
 local player = playerUtilities.GetLocalPlayer()
 
 
 
 -- Events
 
-fightZoneRemoteEvent.OnClientEvent:Connect(function(part)
+fightZoneFFA1RemoteEvent.OnClientEvent:Connect(function(part)
 	
 	-- Show shop button on local player's screen
-	utility.ToggleFightZoneReadyButtonGui()
+	fightZoneUtilities.ToggleFightZoneFFA1ReadyButtonGui()
 end)
 
-readyButton.MouseButton1Click:Connect(function()
+fightZoneFFA1ReadyButton.MouseButton1Click:Connect(function()
     playerUtilities.DisablePlayerMovement(player)
-    utility.ToggleFightZoneReadyButtonGui()
-    utility.ToggleFightZoneUnreadyButtonGui()
+    fightZoneUtilities.ToggleFightZoneFFA1ReadyButtonGui()
+    fightZoneFFA1ReadyRemoteEvent:FireServer()
+    fightZoneUtilities.ToggleFightZoneFFA1UnreadyButtonGui()
 end)
 
-unreadyButton.MouseButton1Click:Connect(function()
-    utility.ToggleFightZoneUnreadyButtonGui()
-    utility.ToggleFightZoneReadyButtonGui()
+fightZoneFFA1UnreadyButton.MouseButton1Click:Connect(function()
+    fightZoneUtilities.ToggleFightZoneFFA1UnreadyButtonGui()
+    fightZoneFFA1UnreadyRemoteEvent:FireServer()
+    fightZoneUtilities.ToggleFightZoneFFA1ReadyButtonGui()
     playerUtilities.EnablePlayerMovement(player)
 end)
 

@@ -315,44 +315,6 @@ function module.GetIndexOfTableValue(tbl, value)
 end
 
 
-function module.GetFightZoneReadyButtonGui()
-	return game.Players.LocalPlayer.PlayerGui:FindFirstChild("FightZoneReadyButtonGui")
-end
-
-function module.GetFightZoneUnreadyButtonGui()
-	return game.Players.LocalPlayer.PlayerGui:FindFirstChild("FightZoneUnreadyButtonGui")
-end
-
-function module.ToggleFightZoneReadyButtonGui()
-	local gui = module.GetFightZoneReadyButtonGui()
-	
-	if gui then
-		
-		if gui.Enabled == true then
-			gui.Enabled = false
-		else
-			gui.Enabled = true
-		end
-		
-	end
-
-end
-
-function module.ToggleFightZoneUnreadyButtonGui()
-	local gui = module.GetFightZoneUnreadyButtonGui()
-	
-	if gui then
-		
-		if gui.Enabled == true then
-			gui.Enabled = false
-		else
-			gui.Enabled = true
-		end
-		
-	end
-
-end
-
 return module
 
 
