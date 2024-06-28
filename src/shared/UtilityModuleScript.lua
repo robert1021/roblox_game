@@ -298,4 +298,61 @@ function module.GetIsBattleArea()
 	end
 end
 
+function module.GetLengthHashTable(tbl)
+	local count = 0
+	for _, _ in pairs(tbl) do
+		count += 1
+	end
+	return count
+end
+
+function module.GetIndexOfTableValue(tbl, value)
+	for i, v in ipairs(tbl) do
+		if v == value then return i end
+	end
+
+	return nil
+end
+
+
+function module.GetFightZoneReadyButtonGui()
+	return game.Players.LocalPlayer.PlayerGui:FindFirstChild("FightZoneReadyButtonGui")
+end
+
+function module.GetFightZoneUnreadyButtonGui()
+	return game.Players.LocalPlayer.PlayerGui:FindFirstChild("FightZoneUnreadyButtonGui")
+end
+
+function module.ToggleFightZoneReadyButtonGui()
+	local gui = module.GetFightZoneReadyButtonGui()
+	
+	if gui then
+		
+		if gui.Enabled == true then
+			gui.Enabled = false
+		else
+			gui.Enabled = true
+		end
+		
+	end
+
+end
+
+function module.ToggleFightZoneUnreadyButtonGui()
+	local gui = module.GetFightZoneUnreadyButtonGui()
+	
+	if gui then
+		
+		if gui.Enabled == true then
+			gui.Enabled = false
+		else
+			gui.Enabled = true
+		end
+		
+	end
+
+end
+
 return module
+
+
