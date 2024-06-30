@@ -13,6 +13,7 @@ local updateExpBarCompletionRemoteEvent = ReplicatedStorage.UpdateExpBarCompleti
 local addPlayerGoldRemoteEvent = ReplicatedStorage.AddPlayerGoldRemoteEvent
 local removePlayerGoldRemoteEvent = ReplicatedStorage.RemovePlayerGoldRemoteEvent
 local updatePlayerGoldInventoryRemoteEvent = ReplicatedStorage.UpdatePlayerGoldInventoryRemoteEvent
+local buyWeaponRemoteEvent = ReplicatedStorage.RemoteEvents.BuyWeaponRemoteEvent :: RemoteEvent
 -- Remote Functions
 
 
@@ -24,6 +25,11 @@ local function createPlayerData(player)
 		["level"] = 1,
 		["gold"] = 0,
 		["exp"] = 0,
+		["inventory"] = {
+			["weapons"] = {},
+			["armor"] = {},
+			["potions"] = {}
+		}
 	}
 	
 	local saveSuccess, saveError = pcall(function()
@@ -172,13 +178,30 @@ local function addPlayerLevel(player, amount)
 end
 
 
+local function addPlayerWeapon(player, weapon)
+
+	local success, results = pcall(function()
+		return PlayerDataStore:UpdateAsync(utility.GetDataStoreKey(player), function()
+			local data = loadPlayerData(player)
+			table.insert(data.inventory.weapons, weapon)
+			return data
+		end)
+	end)
+
+	if success then
+		print("Added " .. weapon .. " level to " .. utility.GetPlayerName(player))
+	else
+		warn("Failed to add weapon to player:", utility.GetPlayerName(player))
+	end
+
+end
 
 -- Events
 
 Players.PlayerAdded:Connect(function(player)
 	local data = loadPlayerData(player)
 
-	if data == nil then
+	if next(data) == nil then
 		createPlayerData(player)
 
 	else
@@ -240,6 +263,11 @@ removePlayerGoldRemoteEvent.OnServerEvent:Connect(function(player, amount)
 	end
 end)
 
+
+buyWeaponRemoteEvent.OnServerEvent:Connect(function(player, weapon)
+	addPlayerWeapon(player, weapon)
+	print("added weapon")
+end)
 
 
 
