@@ -15,6 +15,7 @@ local removePlayerGoldRemoteEvent = ReplicatedStorage.RemovePlayerGoldRemoteEven
 local updatePlayerGoldInventoryRemoteEvent = ReplicatedStorage.UpdatePlayerGoldInventoryRemoteEvent
 local buyWeaponRemoteEvent = ReplicatedStorage.RemoteEvents.BuyWeaponRemoteEvent :: RemoteEvent
 -- Remote Functions
+local getPlayerInventoryRemoteFunc = ReplicatedStorage.RemoteFunctions.GetPlayerInventory
 
 
 
@@ -196,6 +197,13 @@ local function addPlayerWeapon(player, weapon)
 
 end
 
+
+local function getPlayerInventory(player)
+	local data = loadPlayerData(player)
+
+	if data ~= nil then return data.inventory end
+end
+
 -- Events
 
 Players.PlayerAdded:Connect(function(player)
@@ -266,14 +274,15 @@ end)
 
 buyWeaponRemoteEvent.OnServerEvent:Connect(function(player, weapon)
 	addPlayerWeapon(player, weapon)
-	print("added weapon")
 end)
-
 
 
 -- Remote Functions
 
-
+getPlayerInventoryRemoteFunc.OnServerInvoke = function(player)
+	local inventory = getPlayerInventory(player)
+	return inventory
+end
 
 
 
