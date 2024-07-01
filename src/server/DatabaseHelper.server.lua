@@ -14,8 +14,11 @@ local addPlayerGoldRemoteEvent = ReplicatedStorage.AddPlayerGoldRemoteEvent
 local removePlayerGoldRemoteEvent = ReplicatedStorage.RemovePlayerGoldRemoteEvent
 local updatePlayerGoldInventoryRemoteEvent = ReplicatedStorage.UpdatePlayerGoldInventoryRemoteEvent
 local buyWeaponRemoteEvent = ReplicatedStorage.RemoteEvents.BuyWeaponRemoteEvent :: RemoteEvent
+local equipItemRemoteEvent = ReplicatedStorage.RemoteEvents.EquipItem :: RemoteEvent
+local UnequipItemRemoteEvent = ReplicatedStorage.RemoteEvents.UnequipItem :: RemoteEvent
 -- Remote Functions
 local getPlayerInventoryRemoteFunc = ReplicatedStorage.RemoteFunctions.GetPlayerInventory
+local getPlayerEquippedRemoteFunc = ReplicatedStorage.RemoteFunctions.GetPlayerEquipped :: RemoteFunction
 
 
 
@@ -30,7 +33,9 @@ local function createPlayerData(player)
 			["weapons"] = {},
 			["armor"] = {},
 			["potions"] = {}
-		}
+
+		},
+		["equipped"] = {},
 	}
 	
 	local saveSuccess, saveError = pcall(function()
@@ -184,7 +189,18 @@ local function addPlayerWeapon(player, weapon)
 	local success, results = pcall(function()
 		return PlayerDataStore:UpdateAsync(utility.GetDataStoreKey(player), function()
 			local data = loadPlayerData(player)
-			table.insert(data.inventory.weapons, weapon)
+			
+			if data.inventory.weapons[weapon] == nil then
+				print("here")
+				data.inventory.weapons[weapon] = {
+					["count"] = 1,
+					["equipped"] = false
+				}
+
+			else
+				data.inventory.weapons[weapon]["count"] += 1
+			end
+			--table.insert(data.inventory.weapons, weapon)
 			return data
 		end)
 	end)
@@ -204,10 +220,61 @@ local function getPlayerInventory(player)
 	if data ~= nil then return data.inventory end
 end
 
+
+local function getPlayerEquipped(player)
+	local data = loadPlayerData(player)
+
+	if data ~= nil then return data.equipped end
+end
+
+
+local function equipItem(player, item)
+
+	local success, results = pcall(function()
+		return PlayerDataStore:UpdateAsync(utility.GetDataStoreKey(player), function()
+			local data = loadPlayerData(player)
+			table.insert(data.equipped, item)
+			return data
+		end)
+	end)
+
+	if success then
+		print("Equipped " .. item .. " to " .. utility.GetPlayerName(player))
+	else
+		warn("Failed to equip to player:", utility.GetPlayerName(player))
+	end
+
+end
+
+
+local function UnequipItem(player, item)
+
+	local success, results = pcall(function()
+		return PlayerDataStore:UpdateAsync(utility.GetDataStoreKey(player), function()
+			local data = loadPlayerData(player)
+			local itemIndex = utility.GetIndexOfTableValue(data.equipped, item)
+			table.remove(data.equipped, itemIndex)
+			
+			return data
+		end)
+	end)
+
+	if success then
+		print("Unequipped " .. item .. " from " .. utility.GetPlayerName(player))
+	else
+		warn("Failed to equip to player:", utility.GetPlayerName(player))
+	end
+
+end
+
+
+
 -- Events
 
 Players.PlayerAdded:Connect(function(player)
 	local data = loadPlayerData(player)
+
+	print(data)
 
 	if next(data) == nil then
 		createPlayerData(player)
@@ -277,11 +344,27 @@ buyWeaponRemoteEvent.OnServerEvent:Connect(function(player, weapon)
 end)
 
 
+equipItemRemoteEvent.OnServerEvent:Connect(function(player, item)
+	equipItem(player, item)
+end)
+
+
+UnequipItemRemoteEvent.OnServerEvent:Connect(function(player, item)
+	UnequipItem(player, item)
+end)
+
+
 -- Remote Functions
 
 getPlayerInventoryRemoteFunc.OnServerInvoke = function(player)
 	local inventory = getPlayerInventory(player)
 	return inventory
+end
+
+
+getPlayerEquippedRemoteFunc.OnServerInvoke = function(player)
+	local equipped = getPlayerEquipped(player)
+	return equipped
 end
 
 

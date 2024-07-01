@@ -16,6 +16,10 @@ local otherButton = guiUtilities.getInventoryOtherButton()
 
 local isInventoryOpen = false
 
+
+-- Functions
+
+
 -- Events
 
 inventoryButton.MouseButton1Click:Connect(function()

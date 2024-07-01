@@ -41,6 +41,21 @@ function module.GetInventoryGoldTextLabel()
 end
 
 
+function module.getIsToolInBackpack(tool)
+
+    for _, child in module.GetLocalPlayer().Backpack:GetChildren() do
+        if child.Name == tool then return true end
+    end
+
+    return false
+end
+
+
+function module.removeToolBackpack(tool)
+    module.GetLocalPlayer().Backpack[tool]:Destroy()
+end
+
+
 
 
 
