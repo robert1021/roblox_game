@@ -1,11 +1,14 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local tools = ReplicatedStorage.Tools
 local utility = require(ReplicatedStorage.UtilityModuleScript)
 local playerUtilities = require(ReplicatedStorage.PlayerUtilities)
 local guiUtilities = require(ReplicatedStorage.GuiUtilities)
 local inventoryButton = game.Players.LocalPlayer.PlayerGui:FindFirstChild("InventoryButtonGui").InventoryButton :: TextButton
 local updatePlayerGoldInventoryRemoteEvent = ReplicatedStorage.UpdatePlayerGoldInventoryRemoteEvent :: RemoteEvent
-local getPlayerInventoryRemoteFunc = ReplicatedStorage.RemoteFunctions.GetPlayerInventory
+local loadPlayerBackpackRemoteEvent = ReplicatedStorage.RemoteEvents.LoadPlayerBackpack :: RemoteEvent
+local getPlayerInventoryRemoteFunc = ReplicatedStorage.RemoteFunctions.GetPlayerInventory :: RemoteFunction
+local getPlayerEquippedRemoteFunc = ReplicatedStorage.RemoteFunctions.GetPlayerEquipped :: RemoteFunction
 
 -- Inventory buttons
 local weaponsButton = guiUtilities.getInventoryWeaponsButton()
@@ -30,6 +33,7 @@ inventoryButton.MouseButton1Click:Connect(function()
         local results = getPlayerInventoryRemoteFunc:InvokeServer()
 
         guiUtilities.addItemsInventory(results)
+        guiUtilities.selectInventoryCategoryButton("Weapons")
         guiUtilities.showInventoryCategory("Weapons")
 
     else
@@ -42,21 +46,25 @@ end)
 
 
 weaponsButton.MouseButton1Click:Connect(function()
+    guiUtilities.selectInventoryCategoryButton("Weapons")
     guiUtilities.showInventoryCategory("Weapons")
 end)
 
 
 armorButton.MouseButton1Click:Connect(function()
+    guiUtilities.selectInventoryCategoryButton("Armor")
     guiUtilities.showInventoryCategory("Armor")
 end)
 
 
 potionsButton.MouseButton1Click:Connect(function()
+    guiUtilities.selectInventoryCategoryButton("Potions")
     guiUtilities.showInventoryCategory("Potions")
 end)
 
 
 otherButton.MouseButton1Click:Connect(function()
+    guiUtilities.selectInventoryCategoryButton("Other")
     guiUtilities.showInventoryCategory("Other")
 end)
 
@@ -64,4 +72,13 @@ end)
 
 updatePlayerGoldInventoryRemoteEvent.OnClientEvent:Connect(function(playerGold)
     playerUtilities.GetInventoryGoldTextLabel().Text = playerGold
+end)
+
+
+loadPlayerBackpackRemoteEvent.OnClientEvent:Connect(function(equipped)
+    -- Load Backpack
+    for _, v in ipairs(equipped) do
+        local tool = tools[v]:Clone()
+        tool.Parent = playerUtilities.GetLocalPlayer().Backpack
+    end
 end)

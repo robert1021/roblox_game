@@ -34,23 +34,20 @@ function module.addItemsInventory(items)
     local inventory = module.getInventoryGui()
     local equipItemRemoteEvent = ReplicatedStorage.RemoteEvents.EquipItem
     local unequipItemRemoteEvent = ReplicatedStorage.RemoteEvents.UnequipItem
-    local getPlayerEquippedRemoteFunc = ReplicatedStorage.RemoteFunctions.GetPlayerEquipped :: RemoteFunction
     local tools = ReplicatedStorage.Tools
-
-    local equippedResults = getPlayerEquippedRemoteFunc:InvokeServer()
-    print(equippedResults)
-
+    
     for k, _ in pairs(items) do
 
         if k == "weapons" then
-            for _, item in items[k] do
+            for weapon, v in items[k] do
                 local inventoryFrame = ReplicatedStorage.GUI.InventoryFrame:Clone()
-                inventoryFrame.ItemName.Text = item
+                inventoryFrame.ItemName.Text = weapon
+                inventoryFrame.ItemCount.Text = v["count"]
     
                 inventoryFrame.EquipButton.MouseButton1Click:Connect(function()
                     
                     for _, child in tools:GetChildren() do
-                        if child.Name == item then
+                        if child.Name == weapon then
                             local tool = child:Clone()
                             tool.Parent = playerUtilities.GetLocalPlayer().Backpack
                             break
@@ -58,7 +55,7 @@ function module.addItemsInventory(items)
                     end
 
                     -- Fire event to add item to equipped in database
-                    equipItemRemoteEvent:FireServer(item)
+                    equipItemRemoteEvent:FireServer(weapon)
                     inventoryFrame.UnequipButton.Visible = true
                     inventoryFrame.EquipButton.Visible = false
                 end)
@@ -67,15 +64,15 @@ function module.addItemsInventory(items)
 
                     -- Remove from backback
                     
-                    if playerUtilities.getIsToolInBackpack(item) then
-                        playerUtilities.removeToolBackpack(item)
+                    if playerUtilities.getIsToolInBackpack(weapon) then
+                        playerUtilities.removeToolBackpack(weapon)
                     else
                         local name = playerUtilities.GetLocalPlayer().Name
-                        game.Workspace[name][item]:Destroy()
+                        game.Workspace[name][weapon]:Destroy()
                     end
                     
                     -- Fire event remove item from equipped in database
-                    unequipItemRemoteEvent:FireServer(item)
+                    unequipItemRemoteEvent:FireServer(weapon)
 
                     inventoryFrame.EquipButton.Visible = true
                     inventoryFrame.UnequipButton.Visible = false
@@ -83,10 +80,13 @@ function module.addItemsInventory(items)
                 end)
                 
                 -- Check if item is equipped and change the button
-                -- if utility.GetIndexOfTableValue(equippedResults, item) ~= nil then
-                --     inventoryFrame.UnequipButton.Visible = true
-                --     inventoryFrame.EquipButton.Visible = false
-                -- end
+                if v["equipped"] then
+                    inventoryFrame.UnequipButton.Visible = true
+                    inventoryFrame.EquipButton.Visible = false
+                else
+                    inventoryFrame.UnequipButton.Visible = false
+                    inventoryFrame.EquipButton.Visible = true
+                end
 
                 inventoryFrame.Parent = inventory.Frame.WeaponsScrollingFrame
             end
@@ -124,6 +124,32 @@ function module.showInventoryCategory(category)
         end
     end
 
+end
+
+
+function module.selectInventoryCategoryButton(category)
+
+    if category == "Weapons" then
+        module.getInventoryWeaponsButton().UIStroke.Enabled = true
+        module.getInventoryArmorButton().UIStroke.Enabled = false
+        module.getInventoryPotionsButton().UIStroke.Enabled = false
+        module.getInventoryOtherButton().UIStroke.Enabled = false
+    elseif category =="Armor" then
+        module.getInventoryWeaponsButton().UIStroke.Enabled = false
+        module.getInventoryArmorButton().UIStroke.Enabled = true
+        module.getInventoryPotionsButton().UIStroke.Enabled = false
+        module.getInventoryOtherButton().UIStroke.Enabled = false
+    elseif category =="Potions" then
+        module.getInventoryWeaponsButton().UIStroke.Enabled = false
+        module.getInventoryArmorButton().UIStroke.Enabled = false
+        module.getInventoryPotionsButton().UIStroke.Enabled = true
+        module.getInventoryOtherButton().UIStroke.Enabled = false
+    elseif category =="Other" then
+        module.getInventoryWeaponsButton().UIStroke.Enabled = false
+        module.getInventoryArmorButton().UIStroke.Enabled = false
+        module.getInventoryPotionsButton().UIStroke.Enabled = false
+        module.getInventoryOtherButton().UIStroke.Enabled = true
+    end
 end
 
 

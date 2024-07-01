@@ -16,6 +16,7 @@ local updatePlayerGoldInventoryRemoteEvent = ReplicatedStorage.UpdatePlayerGoldI
 local buyWeaponRemoteEvent = ReplicatedStorage.RemoteEvents.BuyWeaponRemoteEvent :: RemoteEvent
 local equipItemRemoteEvent = ReplicatedStorage.RemoteEvents.EquipItem :: RemoteEvent
 local UnequipItemRemoteEvent = ReplicatedStorage.RemoteEvents.UnequipItem :: RemoteEvent
+local loadPlayerBackpackRemoteEvent = ReplicatedStorage.RemoteEvents.LoadPlayerBackpack :: RemoteEvent
 -- Remote Functions
 local getPlayerInventoryRemoteFunc = ReplicatedStorage.RemoteFunctions.GetPlayerInventory
 local getPlayerEquippedRemoteFunc = ReplicatedStorage.RemoteFunctions.GetPlayerEquipped :: RemoteFunction
@@ -35,7 +36,6 @@ local function createPlayerData(player)
 			["potions"] = {}
 
 		},
-		["equipped"] = {},
 	}
 	
 	local saveSuccess, saveError = pcall(function()
@@ -191,7 +191,6 @@ local function addPlayerWeapon(player, weapon)
 			local data = loadPlayerData(player)
 			
 			if data.inventory.weapons[weapon] == nil then
-				print("here")
 				data.inventory.weapons[weapon] = {
 					["count"] = 1,
 					["equipped"] = false
@@ -200,7 +199,7 @@ local function addPlayerWeapon(player, weapon)
 			else
 				data.inventory.weapons[weapon]["count"] += 1
 			end
-			--table.insert(data.inventory.weapons, weapon)
+			
 			return data
 		end)
 	end)
@@ -223,8 +222,15 @@ end
 
 local function getPlayerEquipped(player)
 	local data = loadPlayerData(player)
+	local equipped = {}
 
-	if data ~= nil then return data.equipped end
+	if data ~= nil then
+		for k, v in pairs(data.inventory.weapons) do
+			if data.inventory.weapons[k]["equipped"] then table.insert(equipped, k) end
+		end
+	end
+
+	return equipped
 end
 
 
@@ -233,7 +239,7 @@ local function equipItem(player, item)
 	local success, results = pcall(function()
 		return PlayerDataStore:UpdateAsync(utility.GetDataStoreKey(player), function()
 			local data = loadPlayerData(player)
-			table.insert(data.equipped, item)
+			data.inventory.weapons[item]["equipped"] = true
 			return data
 		end)
 	end)
@@ -252,8 +258,7 @@ local function UnequipItem(player, item)
 	local success, results = pcall(function()
 		return PlayerDataStore:UpdateAsync(utility.GetDataStoreKey(player), function()
 			local data = loadPlayerData(player)
-			local itemIndex = utility.GetIndexOfTableValue(data.equipped, item)
-			table.remove(data.equipped, itemIndex)
+			data.inventory.weapons[item]["equipped"] = false
 			
 			return data
 		end)
@@ -286,6 +291,7 @@ Players.PlayerAdded:Connect(function(player)
 		local percent = expTable.CalculatePercentLevelComplete(data.level, data.exp)
 		updateExpBarCompletionRemoteEvent:FireClient(player, percent)
 		updatePlayerGoldInventoryRemoteEvent:FireClient(player, getPlayerGold(player))
+		loadPlayerBackpackRemoteEvent:FireClient(player, getPlayerEquipped(player))
 		
 	end
 	
