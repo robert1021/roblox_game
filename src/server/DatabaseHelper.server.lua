@@ -1,5 +1,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local DataStoreService = game:GetService("DataStoreService")
+local LogService = game:GetService("LogService")
+
 local PlayerDataStore = DataStoreService:GetDataStore("PlayerDataStore")
 local Players = game:GetService("Players")
 
@@ -44,8 +46,10 @@ local function createPlayerData(player)
 	
 	if saveSuccess then
 		print("Player data added successfully.")
+		return playerData
 	else
 		warn("Failed to save player data:", saveError)
+		return nil
 	end
 	
 end
@@ -57,7 +61,11 @@ local function loadPlayerData(player)
 	end)
 
 	if success then
-		return data
+		if data then
+			return data
+		else
+			return createPlayerData(player)
+		end
 	else
 		warn("Failed to load player data:", data)
 		return nil
@@ -279,12 +287,7 @@ end
 Players.PlayerAdded:Connect(function(player)
 	local data = loadPlayerData(player)
 
-	print(data)
-
-	if next(data) == nil then
-		createPlayerData(player)
-
-	else
+	if data then
 		setLevelRemoteEvent:FireClient(player, data.level)
 		-- Get the percent complete of current level to update the exp bar completion
 		local expTable = require(ReplicatedStorage.ExpTable)
@@ -292,9 +295,10 @@ Players.PlayerAdded:Connect(function(player)
 		updateExpBarCompletionRemoteEvent:FireClient(player, percent)
 		updatePlayerGoldInventoryRemoteEvent:FireClient(player, getPlayerGold(player))
 		loadPlayerBackpackRemoteEvent:FireClient(player, getPlayerEquipped(player))
-		
+	else
+		warn("Failed to initialize player data for player:", utility.GetPlayerName(player))
 	end
-	
+		
 end)
 
 
@@ -372,7 +376,6 @@ getPlayerEquippedRemoteFunc.OnServerInvoke = function(player)
 	local equipped = getPlayerEquipped(player)
 	return equipped
 end
-
 
 
 
