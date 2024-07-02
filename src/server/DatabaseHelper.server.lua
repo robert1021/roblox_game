@@ -1,11 +1,14 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local DataStoreService = game:GetService("DataStoreService")
-local LogService = game:GetService("LogService")
+
 
 local PlayerDataStore = DataStoreService:GetDataStore("PlayerDataStore")
 local Players = game:GetService("Players")
 
 local utility = require(ReplicatedStorage.UtilityModuleScript)
+local playerUtilities = require(ReplicatedStorage.PlayerUtilities)
+
+local tools = ReplicatedStorage.Tools
 
 -- Remote events
 local addExpRemoteEvent = ReplicatedStorage.AddExpRemoteEvent
@@ -90,7 +93,30 @@ local function deletePlayerData(player)
 		
 	end
 	
+end
+
+local function deleteAllPlayerData()
+	local Success, Pages = pcall(function()
+		return PlayerDataStore:ListKeysAsync()
+	end)
 	
+	while task.wait() do
+	
+		local Items = Pages:GetCurrentPage()
+	
+		for _, Data in ipairs(Items) do
+	
+			local Key = Data.KeyName
+			PlayerDataStore:RemoveAsync(Key)
+	
+		end
+	
+		if Pages.IsFinished then break else Pages:AdvanceToNextPageAsync() end
+	
+	end
+	
+	print("Done")
+
 end
 
 local function getPlayerGold(player)
@@ -254,6 +280,14 @@ local function equipItem(player, item)
 
 	if success then
 		print("Equipped " .. item .. " to " .. utility.GetPlayerName(player))
+
+		for _, child in tools:GetChildren() do
+			if child.Name == item then
+				local tool = child:Clone()
+				tool.Parent = player.Backpack
+				break
+			end
+		end
 	else
 		warn("Failed to equip to player:", utility.GetPlayerName(player))
 	end
@@ -281,7 +315,6 @@ local function UnequipItem(player, item)
 end
 
 
-
 -- Events
 
 Players.PlayerAdded:Connect(function(player)
@@ -295,6 +328,7 @@ Players.PlayerAdded:Connect(function(player)
 		updateExpBarCompletionRemoteEvent:FireClient(player, percent)
 		updatePlayerGoldInventoryRemoteEvent:FireClient(player, getPlayerGold(player))
 		loadPlayerBackpackRemoteEvent:FireClient(player, getPlayerEquipped(player))
+		
 	else
 		warn("Failed to initialize player data for player:", utility.GetPlayerName(player))
 	end

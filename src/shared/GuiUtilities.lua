@@ -45,14 +45,6 @@ function module.addItemsInventory(items)
                 inventoryFrame.ItemCount.Text = v["count"]
     
                 inventoryFrame.EquipButton.MouseButton1Click:Connect(function()
-                    
-                    for _, child in tools:GetChildren() do
-                        if child.Name == weapon then
-                            local tool = child:Clone()
-                            tool.Parent = playerUtilities.GetLocalPlayer().Backpack
-                            break
-                        end
-                    end
 
                     -- Fire event to add item to equipped in database
                     equipItemRemoteEvent:FireServer(weapon)
