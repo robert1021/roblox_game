@@ -145,5 +145,29 @@ function module.selectInventoryCategoryButton(category)
 end
 
 
+function module.showBuyItemMessageSuccess()
+    local gui = game.Players.LocalPlayer.PlayerGui:FindFirstChild("BuyItemMessageSuccessGui")
+    gui.Enabled = true
+end
+
+
+function module.hideBuyItemMessageSuccess()
+    local gui = game.Players.LocalPlayer.PlayerGui:FindFirstChild("BuyItemMessageSuccessGui")
+    gui.Enabled = false
+end
+
+
+function module.showBuyItemMessageFailed()
+    local gui = game.Players.LocalPlayer.PlayerGui:FindFirstChild("BuyItemMessageFailedGui")
+    gui.Enabled = true
+end
+
+
+function module.hideBuyItemMessageFailed()
+    local gui = game.Players.LocalPlayer.PlayerGui:FindFirstChild("BuyItemMessageFailedGui")
+    gui.Enabled = false
+end
+
+
 
 return module

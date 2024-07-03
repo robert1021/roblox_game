@@ -3,10 +3,15 @@ local RunService = game:GetService("RunService")
 
 local weapons = require(ReplicatedStorage.Weapons)
 local utility = require(ReplicatedStorage.UtilityModuleScript)
+local guiUtilities = require(ReplicatedStorage.GuiUtilities)
+local soundUtilities = require(ReplicatedStorage.SoundUtilities)
+
 local weaponShopButton = game.Players.LocalPlayer.PlayerGui:FindFirstChild("WeaponShopButtonGui").ShopButton
 local weaponShopCloseButton = game.Players.LocalPlayer.PlayerGui:FindFirstChild("WeaponShopGui").Frame.CloseButton
 local scrollingFrame = game.Players.LocalPlayer.PlayerGui:FindFirstChild("WeaponShopGui").Frame.ScrollingFrame :: ScrollingFrame
 local buyWeaponRemoteEvent = ReplicatedStorage.RemoteEvents.BuyWeaponRemoteEvent :: RemoteEvent
+local buyItemMessageSuccess = ReplicatedStorage.RemoteEvents.BuyItemMessageSuccess :: RemoteEvent
+local buyItemMessageFailed = ReplicatedStorage.RemoteEvents.BuyItemMessageFailed :: RemoteEvent
 
 -- Events
 
@@ -38,6 +43,24 @@ weaponShopCloseButton.MouseButton1Click:Connect(function()
 	end
 
 	utility.ToggleWeaponShop()
+end)
+
+
+buyItemMessageSuccess.OnClientEvent:Connect(function()
+	-- TODO: play button sound
+	soundUtilities.playBuyItemSuccessSound()
+	guiUtilities.showBuyItemMessageSuccess()
+	task.wait(1)
+	guiUtilities.hideBuyItemMessageSuccess()
+end)
+
+
+buyItemMessageFailed.OnClientEvent:Connect(function()
+	-- TODO: play button sound
+	soundUtilities.playBuyItemFailedSound()
+	guiUtilities.showBuyItemMessageFailed()
+	task.wait(1)
+	guiUtilities.hideBuyItemMessageFailed()
 end)
 
 

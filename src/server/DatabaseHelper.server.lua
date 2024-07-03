@@ -7,6 +7,7 @@ local Players = game:GetService("Players")
 
 local utility = require(ReplicatedStorage.UtilityModuleScript)
 local playerUtilities = require(ReplicatedStorage.PlayerUtilities)
+local weaponUtilities = require(ReplicatedStorage.Weapons)
 
 local tools = ReplicatedStorage.Tools
 
@@ -22,6 +23,8 @@ local buyWeaponRemoteEvent = ReplicatedStorage.RemoteEvents.BuyWeaponRemoteEvent
 local equipItemRemoteEvent = ReplicatedStorage.RemoteEvents.EquipItem :: RemoteEvent
 local UnequipItemRemoteEvent = ReplicatedStorage.RemoteEvents.UnequipItem :: RemoteEvent
 local loadPlayerBackpackRemoteEvent = ReplicatedStorage.RemoteEvents.LoadPlayerBackpack :: RemoteEvent
+local buyItemMessageSuccess = ReplicatedStorage.RemoteEvents.BuyItemMessageSuccess :: RemoteEvent
+local buyItemMessageFailed = ReplicatedStorage.RemoteEvents.BuyItemMessageFailed :: RemoteEvent
 -- Remote Functions
 local getPlayerInventoryRemoteFunc = ReplicatedStorage.RemoteFunctions.GetPlayerInventory
 local getPlayerEquippedRemoteFunc = ReplicatedStorage.RemoteFunctions.GetPlayerEquipped :: RemoteFunction
@@ -384,7 +387,18 @@ end)
 
 
 buyWeaponRemoteEvent.OnServerEvent:Connect(function(player, weapon)
-	addPlayerWeapon(player, weapon)
+	local gold = getPlayerGold(player)
+	local weaponPrice = weaponUtilities.getWeaponPrice(weapon)
+	
+	if (gold - weaponPrice) >= 0 then
+		removePlayerGold(player, weaponPrice)
+		updatePlayerGoldInventoryRemoteEvent:FireClient(player, getPlayerGold(player))
+		addPlayerWeapon(player, weapon)
+		buyItemMessageSuccess:FireClient(player)
+	else
+		buyItemMessageFailed:FireClient(player)
+	end
+	
 end)
 
 
