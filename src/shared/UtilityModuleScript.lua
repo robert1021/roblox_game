@@ -315,6 +315,18 @@ function module.GetIndexOfTableValue(tbl, value)
 end
 
 
+function module.dropToolInGame(tool, amount)
+	local ReplicatedStorage = game:GetService("ReplicatedStorage")
+	local tools = ReplicatedStorage.Tools
+
+	for i = 1, amount do
+		local item = tools[tool]:Clone()
+		item.Parent = game.Workspace
+		print(i)
+	end
+end
+
+
 return module
 
 

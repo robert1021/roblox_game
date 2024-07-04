@@ -73,16 +73,16 @@ function module.removeToolFromPlayer(player, tool)
 end
 
 
-function module.dropToolFromPlayer(player, tool)
+-- function module.dropToolFromPlayer(player, tool)
 
-    if module.getIsToolInBackpack(player, tool) then
-        module.dropToolBackpack(player, tool)
-    else
-        local name = player.Name
-        game.Workspace[name][tool].Parent = game.Workspace
-    end
+--     if module.getIsToolInBackpack(player, tool) then
+--         module.dropToolBackpack(player, tool)
+--     else
+--         local name = player.Name
+--         game.Workspace[name][tool].Parent = game.Workspace
+--     end
 
-end
+-- end
 
 
 

@@ -8,6 +8,7 @@ local Players = game:GetService("Players")
 local utility = require(ReplicatedStorage.UtilityModuleScript)
 local playerUtilities = require(ReplicatedStorage.PlayerUtilities)
 local weaponUtilities = require(ReplicatedStorage.Weapons)
+local guiUtilities = require(ReplicatedStorage.GuiUtilities)
 
 local tools = ReplicatedStorage.Tools
 
@@ -26,6 +27,7 @@ local loadPlayerBackpackRemoteEvent = ReplicatedStorage.RemoteEvents.LoadPlayerB
 local buyItemMessageSuccess = ReplicatedStorage.RemoteEvents.BuyItemMessageSuccess :: RemoteEvent
 local buyItemMessageFailed = ReplicatedStorage.RemoteEvents.BuyItemMessageFailed :: RemoteEvent
 local dropItemRemoteEvent = ReplicatedStorage.RemoteEvents.DropItem :: RemoteEvent
+local updateInventoryRemoteEvent = ReplicatedStorage.RemoteEvents.UpdateInventory :: RemoteEvent
 -- Remote Functions
 local getPlayerInventoryRemoteFunc = ReplicatedStorage.RemoteFunctions.GetPlayerInventory
 local getPlayerEquippedRemoteFunc = ReplicatedStorage.RemoteFunctions.GetPlayerEquipped :: RemoteFunction
@@ -351,10 +353,8 @@ local function removePlayerWeapons(player, weapon, amount)
 
 			if data.inventory.weapons[weapon]["count"] - amount <= 0  then
 				amountDropped = data.inventory.weapons[weapon]["count"]
-
 				-- TODO: Need to remove weapon from database
-
-
+				data.inventory.weapons[weapon] = nil
 				
 			else
 				amountDropped = amount
@@ -473,12 +473,21 @@ end)
 dropItemRemoteEvent.OnServerEvent:Connect(function(player, item, dropAmount)
 	local amountDropped = removePlayerWeapons(player, item, dropAmount)
 
-	print(amountDropped)
+	if amountDropped ~= nil then
 
-	-- if amountDropped ~= nil then
-	-- 	print(tostring(amountDropped))
-	-- 	playerUtilities.dropToolFromPlayer(player, item)
-	-- end
+		local inventory = getPlayerInventory(player)
+
+		if inventory.weapons[item] == nil then
+			local _, _ = pcall(function()
+				playerUtilities.removeToolFromPlayer(player, item)
+			end)
+		end
+		
+		utility.dropToolInGame(item, amountDropped)
+		-- Fire event to update inventory
+		updateInventoryRemoteEvent:FireClient(player)
+		
+	end
 	
 	
 end)
