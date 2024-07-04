@@ -25,6 +25,7 @@ local UnequipItemRemoteEvent = ReplicatedStorage.RemoteEvents.UnequipItem :: Rem
 local loadPlayerBackpackRemoteEvent = ReplicatedStorage.RemoteEvents.LoadPlayerBackpack :: RemoteEvent
 local buyItemMessageSuccess = ReplicatedStorage.RemoteEvents.BuyItemMessageSuccess :: RemoteEvent
 local buyItemMessageFailed = ReplicatedStorage.RemoteEvents.BuyItemMessageFailed :: RemoteEvent
+local dropItemRemoteEvent = ReplicatedStorage.RemoteEvents.DropItem :: RemoteEvent
 -- Remote Functions
 local getPlayerInventoryRemoteFunc = ReplicatedStorage.RemoteFunctions.GetPlayerInventory
 local getPlayerEquippedRemoteFunc = ReplicatedStorage.RemoteFunctions.GetPlayerEquipped :: RemoteFunction
@@ -242,12 +243,15 @@ local function addPlayerWeapon(player, weapon)
 	end)
 
 	if success then
-		print("Added " .. weapon .. " level to " .. utility.GetPlayerName(player))
+		print("Added " .. weapon .. " to " .. utility.GetPlayerName(player))
 	else
 		warn("Failed to add weapon to player:", utility.GetPlayerName(player))
 	end
 
 end
+
+
+
 
 
 local function getPlayerInventory(player)
@@ -298,7 +302,7 @@ local function equipItem(player, item)
 end
 
 
-local function UnequipItem(player, item)
+local function unequipItem(player, item)
 
 	local success, results = pcall(function()
 		return PlayerDataStore:UpdateAsync(utility.GetDataStoreKey(player), function()
@@ -313,6 +317,60 @@ local function UnequipItem(player, item)
 		print("Unequipped " .. item .. " from " .. utility.GetPlayerName(player))
 	else
 		warn("Failed to equip to player:", utility.GetPlayerName(player))
+	end
+
+end
+
+
+local function removePlayerWeapon(player, weapon)
+
+	local success, results = pcall(function()
+		return PlayerDataStore:UpdateAsync(utility.GetDataStoreKey(player), function()
+			local data = loadPlayerData(player)
+			data.inventory.weapons[weapon]["count"] -= 1
+		
+			return data
+		end)
+	end)
+
+	if success then
+		print("Removed " .. weapon .. " from " .. utility.GetPlayerName(player))
+	else
+		warn("Failed to remove weapon from player:", utility.GetPlayerName(player))
+	end
+
+end
+
+
+local function removePlayerWeapons(player, weapon, amount)
+	local amountDropped = 0
+
+	local success, results = pcall(function()
+		return PlayerDataStore:UpdateAsync(utility.GetDataStoreKey(player), function()
+			local data = loadPlayerData(player)
+
+			if data.inventory.weapons[weapon]["count"] - amount <= 0  then
+				amountDropped = data.inventory.weapons[weapon]["count"]
+
+				-- TODO: Need to remove weapon from database
+
+
+				
+			else
+				amountDropped = amount
+				data.inventory.weapons[weapon]["count"] -= amount
+			end
+			
+			return data
+		end)
+	end)
+
+	if success then
+		print("Removed " .. weapon .. " from " .. utility.GetPlayerName(player))
+		return amountDropped
+	else
+		warn("Failed to remove weapon from player:", utility.GetPlayerName(player))
+		return nil
 	end
 
 end
@@ -408,9 +466,22 @@ end)
 
 
 UnequipItemRemoteEvent.OnServerEvent:Connect(function(player, item)
-	UnequipItem(player, item)
+	unequipItem(player, item)
 end)
 
+
+dropItemRemoteEvent.OnServerEvent:Connect(function(player, item, dropAmount)
+	local amountDropped = removePlayerWeapons(player, item, dropAmount)
+
+	print(amountDropped)
+
+	-- if amountDropped ~= nil then
+	-- 	print(tostring(amountDropped))
+	-- 	playerUtilities.dropToolFromPlayer(player, item)
+	-- end
+	
+	
+end)
 
 -- Remote Functions
 

@@ -41,9 +41,9 @@ function module.GetInventoryGoldTextLabel()
 end
 
 
-function module.getIsToolInBackpack(tool)
+function module.getIsToolInBackpack(player, tool)
 
-    for _, child in module.GetLocalPlayer().Backpack:GetChildren() do
+    for _, child in player.Backpack:GetChildren() do
         if child.Name == tool then return true end
     end
 
@@ -51,8 +51,37 @@ function module.getIsToolInBackpack(tool)
 end
 
 
-function module.removeToolBackpack(tool)
-    module.GetLocalPlayer().Backpack[tool]:Destroy()
+function module.removeToolBackpack(player, tool)
+    player.Backpack[tool]:Destroy()
+end
+
+
+function module.dropToolBackpack(player, tool)
+    player.Backpack[tool].Parent = game.Workspace
+end
+
+
+function module.removeToolFromPlayer(player, tool)
+
+    if module.getIsToolInBackpack(player, tool) then
+        module.removeToolBackpack(player, tool)
+    else
+        local name = player.Name
+        game.Workspace[name][tool]:Destroy()
+    end
+
+end
+
+
+function module.dropToolFromPlayer(player, tool)
+
+    if module.getIsToolInBackpack(player, tool) then
+        module.dropToolBackpack(player, tool)
+    else
+        local name = player.Name
+        game.Workspace[name][tool].Parent = game.Workspace
+    end
+
 end
 
 

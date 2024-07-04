@@ -34,7 +34,9 @@ function module.addItemsInventory(items)
     local inventory = module.getInventoryGui()
     local equipItemRemoteEvent = ReplicatedStorage.RemoteEvents.EquipItem
     local unequipItemRemoteEvent = ReplicatedStorage.RemoteEvents.UnequipItem
+    local dropItemRemoteEvent = ReplicatedStorage.RemoteEvents.DropItem
     local tools = ReplicatedStorage.Tools
+    local player = playerUtilities.GetLocalPlayer()
     
     for k, _ in pairs(items) do
 
@@ -55,13 +57,7 @@ function module.addItemsInventory(items)
                 inventoryFrame.UnequipButton.MouseButton1Click:Connect(function()
 
                     -- Remove from backback
-                    
-                    if playerUtilities.getIsToolInBackpack(weapon) then
-                        playerUtilities.removeToolBackpack(weapon)
-                    else
-                        local name = playerUtilities.GetLocalPlayer().Name
-                        game.Workspace[name][weapon]:Destroy()
-                    end
+                    playerUtilities.removeToolFromPlayer(player, weapon)
                     
                     -- Fire event remove item from equipped in database
                     unequipItemRemoteEvent:FireServer(weapon)
@@ -79,6 +75,37 @@ function module.addItemsInventory(items)
                     inventoryFrame.UnequipButton.Visible = false
                     inventoryFrame.EquipButton.Visible = true
                 end
+
+                -- Drop button clicked
+                inventoryFrame.DropButton.MouseButton1Click:Connect(function()
+
+                    if inventoryFrame.DropFrame.Visible then
+                        inventoryFrame.DropFrame.Visible = false
+                    else
+                        inventoryFrame.DropFrame.Visible = true
+                    end
+
+                end)
+
+                -- Only numbers (0-9)
+                inventoryFrame.DropFrame.TextBox:GetPropertyChangedSignal("Text"):Connect(function()
+                    inventoryFrame.DropFrame.TextBox.Text = inventoryFrame.DropFrame.TextBox.Text:gsub('%D+', '');
+                end)
+
+                -- Drop Frame OK
+                inventoryFrame.DropFrame.OkButton.MouseButton1Click:Connect(function()
+                    local dropAmount = inventoryFrame.DropFrame.TextBox.Text
+                    -- Fire event to server (database) to verify if can drop and drop it
+                    dropItemRemoteEvent:FireServer(weapon, dropAmount)
+                    inventoryFrame.DropFrame.Visible = false
+                    inventoryFrame.DropFrame.TextBox.Text = ""
+                end)
+
+                -- Drop Frame NO
+                inventoryFrame.DropFrame.NoButton.MouseButton1Click:Connect(function()
+                    inventoryFrame.DropFrame.Visible = false
+                    inventoryFrame.DropFrame.TextBox.Text = ""
+                end)
 
                 inventoryFrame.Parent = inventory.Frame.WeaponsScrollingFrame
             end
