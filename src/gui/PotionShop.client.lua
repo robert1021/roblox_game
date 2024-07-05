@@ -42,4 +42,4 @@ RunService.RenderStepped:Connect(function()
 end)
 
 
-utility.animateShopButton(potionShopButton)
+guiUtilities.animateShopButton(potionShopButton)

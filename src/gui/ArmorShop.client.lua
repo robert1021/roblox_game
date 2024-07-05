@@ -32,3 +32,6 @@ armorShopCloseButton.MouseButton1Click:Connect(function()
 
 	utility.ToggleArmorShop()
 end)
+
+
+guiUtilities.animateShopButton(armorShopButton)

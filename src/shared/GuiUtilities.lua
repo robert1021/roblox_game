@@ -59,7 +59,7 @@ function module.addItemsInventory(items)
                 inventoryFrame.EquipButton.MouseButton1Click:Connect(function()
 
                     -- Fire event to add item to equipped in database
-                    equipItemRemoteEvent:FireServer(weapon)
+                    equipItemRemoteEvent:FireServer(weapon, "weapon")
                     inventoryFrame.UnequipButton.Visible = true
                     inventoryFrame.EquipButton.Visible = false
                 end)
@@ -206,5 +206,25 @@ function module.hideBuyItemMessageFailed()
 end
 
 
+function module.animateShopButton(button)
+	local TweenService = game:GetService("TweenService") 
+
+	local gradient = button.UIGradient
+	local ti = TweenInfo.new(1, Enum.EasingStyle.Circular, Enum.EasingDirection.Out)
+	local offset1 = {Offset = Vector2.new(1, 0)}
+	local create = TweenService:Create(gradient, ti, offset1)
+	local startingPos = Vector2.new(-1, 0) --start on the right, tween to the left so it looks like the shine went from left to right
+	local addWait = 1.5 --the amount of seconds between each couplet of shines
+
+	create:Play()
+	create.Completed:Wait()
+	gradient.Offset = startingPos
+	create:Play()
+	create.Completed:Wait()
+	gradient.Offset = startingPos
+	task.wait(addWait)
+	module.animateShopButton(button)
+	
+end
 
 return module

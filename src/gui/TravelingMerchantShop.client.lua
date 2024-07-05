@@ -32,3 +32,7 @@ travelingMerchantShopCloseButton.MouseButton1Click:Connect(function()
 
 	utility.ToggleTravelingMerchantShop()
 end)
+
+
+
+guiUtilities.animateShopButton(travelingMerchantShopButton)

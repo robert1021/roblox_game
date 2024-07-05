@@ -81,3 +81,7 @@ RunService.RenderStepped:Connect(function()
 		end
 	end
 end)
+
+
+
+guiUtilities.animateShopButton(weaponShopButton)

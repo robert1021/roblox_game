@@ -23,6 +23,7 @@ local updatePlayerGoldInventoryRemoteEvent = ReplicatedStorage.UpdatePlayerGoldI
 local buyWeaponRemoteEvent = ReplicatedStorage.RemoteEvents.BuyWeaponRemoteEvent :: RemoteEvent
 local equipItemRemoteEvent = ReplicatedStorage.RemoteEvents.EquipItem :: RemoteEvent
 local UnequipItemRemoteEvent = ReplicatedStorage.RemoteEvents.UnequipItem :: RemoteEvent
+local weaponEquippedRemoteEvent = ReplicatedStorage.RemoteEvents.WeaponEquipped :: RemoteEvent
 local loadPlayerBackpackRemoteEvent = ReplicatedStorage.RemoteEvents.LoadPlayerBackpack :: RemoteEvent
 local buyItemMessageSuccess = ReplicatedStorage.RemoteEvents.BuyItemMessageSuccess :: RemoteEvent
 local buyItemMessageFailed = ReplicatedStorage.RemoteEvents.BuyItemMessageFailed :: RemoteEvent
@@ -386,6 +387,7 @@ Players.PlayerAdded:Connect(function(player)
 	if data then
 
 		player.CharacterAdded:Connect(function()
+			addPlayerGold(player, 200)
 			setLevelRemoteEvent:FireClient(player, data.level)
 			-- Get the percent complete of current level to update the exp bar completion
 			local expTable = require(ReplicatedStorage.ExpTable)
@@ -468,8 +470,13 @@ buyWeaponRemoteEvent.OnServerEvent:Connect(function(player, weapon)
 end)
 
 
-equipItemRemoteEvent.OnServerEvent:Connect(function(player, item)
+equipItemRemoteEvent.OnServerEvent:Connect(function(player, item, type)
 	equipItem(player, item)
+
+	if type == "weapon" then
+		weaponEquippedRemoteEvent:FireClient(player, item, type)
+	end
+	
 end)
 
 

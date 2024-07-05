@@ -3,6 +3,18 @@ module = {
         ["Hammer"] = {
             ["Price"] = 100,
             ["Damage"] = 10,
+            ["Cooldown"] = 0.5,
+            ["Animations"] = {
+                ["Swing"] = {
+                    "rbxassetid://18349571763"
+                },
+            },
+            ["Sounds"] = {
+                ["Equip"] = {},
+                ["Unequip"] = {},
+                ["Swing"] = {},
+                
+            }
         },
         ["Sword"] = {
             ["Price"] = 100,

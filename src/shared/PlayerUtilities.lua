@@ -41,6 +41,11 @@ function module.GetInventoryGoldTextLabel()
 end
 
 
+function module.getPlayerTool(tool)
+    return game.Players.LocalPlayer.Backpack[tool]
+end
+
+
 function module.getIsToolInBackpack(player, tool)
 
     for _, child in player.Backpack:GetChildren() do
