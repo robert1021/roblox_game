@@ -73,6 +73,17 @@ function module.removeToolFromPlayer(player, tool)
 end
 
 
+function module.removeAllToolsFromPlayer(player)
+    local name = player.Name
+    for _, child in player.Backpack:GetChildren() do
+        print(child)
+        child:Destroy()
+    end
+
+end
+
+
+
 -- function module.dropToolFromPlayer(player, tool)
 
 --     if module.getIsToolInBackpack(player, tool) then

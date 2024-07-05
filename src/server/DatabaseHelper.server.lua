@@ -28,6 +28,8 @@ local buyItemMessageSuccess = ReplicatedStorage.RemoteEvents.BuyItemMessageSucce
 local buyItemMessageFailed = ReplicatedStorage.RemoteEvents.BuyItemMessageFailed :: RemoteEvent
 local dropItemRemoteEvent = ReplicatedStorage.RemoteEvents.DropItem :: RemoteEvent
 local updateInventoryRemoteEvent = ReplicatedStorage.RemoteEvents.UpdateInventory :: RemoteEvent
+local removeToolFromPlayerRemoteEvent = ReplicatedStorage.RemoteEvents.RemoveToolFromPlayer :: RemoteEvent
+local removeAllToolsFromPlayer = ReplicatedStorage.RemoteEvents.RemoveAllToolsFromPlayer :: RemoteEvent
 -- Remote Functions
 local getPlayerInventoryRemoteFunc = ReplicatedStorage.RemoteFunctions.GetPlayerInventory
 local getPlayerEquippedRemoteFunc = ReplicatedStorage.RemoteFunctions.GetPlayerEquipped :: RemoteFunction
@@ -382,13 +384,19 @@ Players.PlayerAdded:Connect(function(player)
 	local data = loadPlayerData(player)
 
 	if data then
-		setLevelRemoteEvent:FireClient(player, data.level)
-		-- Get the percent complete of current level to update the exp bar completion
-		local expTable = require(ReplicatedStorage.ExpTable)
-		local percent = expTable.CalculatePercentLevelComplete(data.level, data.exp)
-		updateExpBarCompletionRemoteEvent:FireClient(player, percent)
-		updatePlayerGoldInventoryRemoteEvent:FireClient(player, getPlayerGold(player))
-		loadPlayerBackpackRemoteEvent:FireClient(player, getPlayerEquipped(player))
+
+		player.CharacterAdded:Connect(function()
+			setLevelRemoteEvent:FireClient(player, data.level)
+			-- Get the percent complete of current level to update the exp bar completion
+			local expTable = require(ReplicatedStorage.ExpTable)
+			local percent = expTable.CalculatePercentLevelComplete(data.level, data.exp)
+			updateExpBarCompletionRemoteEvent:FireClient(player, percent)
+			updatePlayerGoldInventoryRemoteEvent:FireClient(player, getPlayerGold(player))
+		
+			local equipped = getPlayerEquipped(player)
+			loadPlayerBackpackRemoteEvent:FireClient(player, equipped)
+		
+		end)
 		
 	else
 		warn("Failed to initialize player data for player:", utility.GetPlayerName(player))
@@ -478,9 +486,7 @@ dropItemRemoteEvent.OnServerEvent:Connect(function(player, item, dropAmount)
 		local inventory = getPlayerInventory(player)
 
 		if inventory.weapons[item] == nil then
-			local _, _ = pcall(function()
-				playerUtilities.removeToolFromPlayer(player, item)
-			end)
+			removeToolFromPlayerRemoteEvent:FireClient(player, item)	
 		end
 		
 		utility.dropToolInGame(item, amountDropped)

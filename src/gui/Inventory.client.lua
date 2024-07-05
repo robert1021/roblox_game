@@ -8,6 +8,8 @@ local inventoryButton = game.Players.LocalPlayer.PlayerGui:FindFirstChild("Inven
 local updatePlayerGoldInventoryRemoteEvent = ReplicatedStorage.UpdatePlayerGoldInventoryRemoteEvent :: RemoteEvent
 local loadPlayerBackpackRemoteEvent = ReplicatedStorage.RemoteEvents.LoadPlayerBackpack :: RemoteEvent
 local updateInventoryRemoteEvent = ReplicatedStorage.RemoteEvents.UpdateInventory :: RemoteEvent
+local removeAllToolsFromPlayer = ReplicatedStorage.RemoteEvents.RemoveAllToolsFromPlayer :: RemoteEvent
+local removeToolFromPlayerRemoteEvent = ReplicatedStorage.RemoteEvents.RemoveToolFromPlayer :: RemoteEvent
 local getPlayerInventoryRemoteFunc = ReplicatedStorage.RemoteFunctions.GetPlayerInventory :: RemoteFunction
 local getPlayerEquippedRemoteFunc = ReplicatedStorage.RemoteFunctions.GetPlayerEquipped :: RemoteFunction
 
@@ -90,4 +92,15 @@ updateInventoryRemoteEvent.OnClientEvent:Connect(function()
     -- Load inventory
     local results = getPlayerInventoryRemoteFunc:InvokeServer()
     guiUtilities.addItemsInventory(results)
+end)
+
+
+removeToolFromPlayerRemoteEvent.OnClientEvent:Connect(function(tool)
+    pcall(function()
+        playerUtilities.removeToolFromPlayer(playerUtilities.GetLocalPlayer(), tool)
+    end)
+end)
+
+removeAllToolsFromPlayer.OnClientEvent:Connect(function()
+    playerUtilities.removeAllToolsFromPlayer(playerUtilities.GetLocalPlayer())
 end)
