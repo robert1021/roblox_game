@@ -7,6 +7,16 @@ function module.getInventoryGui()
 end
 
 
+function module.getInventoryButtonGui()
+    return game.Players.LocalPlayer.PlayerGui:FindFirstChild("InventoryButtonGui")
+end
+
+
+function module.getInventoryButton()
+    return module.getInventoryButtonGui().InventoryButton
+end
+
+
 function module.getInventoryWeaponsButton()
     return module.getInventoryGui().Frame.ButtonFrame.WeaponsButton
 end

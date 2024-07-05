@@ -3,20 +3,32 @@ local RunService = game:GetService("RunService")
 
 
 local utility = require(ReplicatedStorage.UtilityModuleScript)
+local guiUtilities = require(ReplicatedStorage.GuiUtilities)
+
 local potionShopButton = utility.GetPotionShopButton()
 local potionShopCloseButton = game.Players.LocalPlayer.PlayerGui:FindFirstChild("PotionShopGui").Frame.CloseButton
 
-
+local inventoryGui = guiUtilities.getInventoryGui()
+local inventoryButtonGui = guiUtilities.getInventoryButtonGui()
 
 -- Events
 
 -- Potion Shop --
 
 potionShopButton.MouseButton1Click:Connect(function()
+	-- close inventory and hide button
+	inventoryGui.Enabled = false
+	inventoryButtonGui.Enabled = false
+
+
 	utility.TogglePotionShop()
 end)
 
 potionShopCloseButton.MouseButton1Click:Connect(function()
+	-- Enable inventory when shop closed
+	inventoryButtonGui.Enabled = true
+
+
 	utility.TogglePotionShop()
 end)
 
