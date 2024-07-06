@@ -183,8 +183,16 @@ end
 
 
 function module.showBuyItemMessageSuccess()
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+    local TweenService = game:GetService("TweenService")
     local gui = game.Players.LocalPlayer.PlayerGui:FindFirstChild("BuyItemMessageSuccessGui")
+    local frame = ReplicatedStorage.GUI.BuyItemSuccessFrame:Clone()
+    frame.Parent = gui
     gui.Enabled = true
+    local tween = TweenService:Create(frame, TweenInfo.new(1, Enum.EasingStyle.Quad), {Position = UDim2.new(0.5, 0, 0.15, 0)})
+    tween:Play()
+    task.wait(1.25)
+    frame:Destroy()
 end
 
 
@@ -195,8 +203,16 @@ end
 
 
 function module.showBuyItemMessageFailed()
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+    local TweenService = game:GetService("TweenService")
     local gui = game.Players.LocalPlayer.PlayerGui:FindFirstChild("BuyItemMessageFailedGui")
+    local frame = ReplicatedStorage.GUI.BuyItemFailedFrame:Clone()
+    frame.Parent = gui
     gui.Enabled = true
+    local tween = TweenService:Create(frame, TweenInfo.new(1, Enum.EasingStyle.Quad), {Position = UDim2.new(0.5, 0, 0.15, 0)})
+    tween:Play()
+    task.wait(1.25)
+    frame:Destroy()
 end
 
 

@@ -27,6 +27,9 @@ end)
 potionShopCloseButton.MouseButton1Click:Connect(function()
 	-- Enable inventory when shop closed
 	inventoryButtonGui.Enabled = true
+	-- Hide the message gui's
+	guiUtilities.hideBuyItemMessageSuccess()
+	guiUtilities.hideBuyItemMessageFailed()
 
 
 	utility.TogglePotionShop()

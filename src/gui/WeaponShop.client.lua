@@ -45,8 +45,11 @@ end)
 weaponShopCloseButton.MouseButton1Click:Connect(function()
 	-- Enable inventory when shop closed
 	inventoryButtonGui.Enabled = true
+	-- Hide the message gui's
+	guiUtilities.hideBuyItemMessageSuccess()
+	guiUtilities.hideBuyItemMessageFailed()
 
-	for i, v in scrollingFrame:GetChildren() do
+	for _, v in scrollingFrame:GetChildren() do
 		if v:IsA("Frame") then
 			v:Destroy()
 		end
@@ -60,8 +63,7 @@ buyItemMessageSuccess.OnClientEvent:Connect(function()
 	-- TODO: play button sound
 	soundUtilities.playBuyItemSuccessSound()
 	guiUtilities.showBuyItemMessageSuccess()
-	task.wait(1)
-	guiUtilities.hideBuyItemMessageSuccess()
+	
 end)
 
 
@@ -69,8 +71,7 @@ buyItemMessageFailed.OnClientEvent:Connect(function()
 	-- TODO: play button sound
 	soundUtilities.playBuyItemFailedSound()
 	guiUtilities.showBuyItemMessageFailed()
-	task.wait(1)
-	guiUtilities.hideBuyItemMessageFailed()
+
 end)
 
 
