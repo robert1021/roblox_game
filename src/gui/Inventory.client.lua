@@ -10,6 +10,7 @@ local loadPlayerBackpackRemoteEvent = ReplicatedStorage.RemoteEvents.LoadPlayerB
 local updateInventoryRemoteEvent = ReplicatedStorage.RemoteEvents.UpdateInventory :: RemoteEvent
 local removeAllToolsFromPlayer = ReplicatedStorage.RemoteEvents.RemoveAllToolsFromPlayer :: RemoteEvent
 local removeToolFromPlayerRemoteEvent = ReplicatedStorage.RemoteEvents.RemoveToolFromPlayer :: RemoteEvent
+local weaponEquippedRemoteEvent = ReplicatedStorage.RemoteEvents.WeaponEquipped :: RemoteEvent
 local getPlayerInventoryRemoteFunc = ReplicatedStorage.RemoteFunctions.GetPlayerInventory :: RemoteFunction
 local getPlayerEquippedRemoteFunc = ReplicatedStorage.RemoteFunctions.GetPlayerEquipped :: RemoteFunction
 
@@ -83,6 +84,7 @@ loadPlayerBackpackRemoteEvent.OnClientEvent:Connect(function(equipped)
     for _, v in ipairs(equipped) do
         local tool = tools[v]:Clone()
         tool.Parent = playerUtilities.GetLocalPlayer().Backpack
+        
     end
 end)
 

@@ -292,14 +292,8 @@ local function equipItem(player, item)
 
 	if success then
 		print("Equipped " .. item .. " to " .. utility.GetPlayerName(player))
-
-		for _, child in tools:GetChildren() do
-			if child.Name == item then
-				local tool = child:Clone()
-				tool.Parent = player.Backpack
-				break
-			end
-		end
+		-- Clone tool to player backpack
+		tools[item]:Clone().Parent = player.Backpack
 	else
 		warn("Failed to equip to player:", utility.GetPlayerName(player))
 	end
@@ -387,7 +381,6 @@ Players.PlayerAdded:Connect(function(player)
 	if data then
 
 		player.CharacterAdded:Connect(function()
-			addPlayerGold(player, 200)
 			setLevelRemoteEvent:FireClient(player, data.level)
 			-- Get the percent complete of current level to update the exp bar completion
 			local expTable = require(ReplicatedStorage.ExpTable)
@@ -396,7 +389,12 @@ Players.PlayerAdded:Connect(function(player)
 			updatePlayerGoldInventoryRemoteEvent:FireClient(player, getPlayerGold(player))
 		
 			local equipped = getPlayerEquipped(player)
-			loadPlayerBackpackRemoteEvent:FireClient(player, equipped)
+			
+			 -- Equip and add events for all equipped weapons
+			for _, v in ipairs(equipped) do
+				equipItem(player, v)
+				weaponEquippedRemoteEvent:FireClient(player, v)
+			end
 		
 		end)
 		
@@ -474,7 +472,7 @@ equipItemRemoteEvent.OnServerEvent:Connect(function(player, item, type)
 	equipItem(player, item)
 
 	if type == "weapon" then
-		weaponEquippedRemoteEvent:FireClient(player, item, type)
+		weaponEquippedRemoteEvent:FireClient(player, item)
 	end
 	
 end)
