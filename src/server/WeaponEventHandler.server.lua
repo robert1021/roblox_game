@@ -61,8 +61,10 @@ weaponSwungRemoteEvent.OnServerEvent:Connect(function(player, item, touchPart)
         end
     end)
     -- Wait for animation to stop - make this dynamic
-    task.wait(0.4)
+    task.spawn(function()
+        task.wait(0.4)
     stop = true
+    end)
     
     task.wait(weaponUtilities.Weapons[item].Cooldown)
     swinging = false

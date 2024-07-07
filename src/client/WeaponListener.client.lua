@@ -43,11 +43,17 @@ weaponEquippedRemoteEvent.OnClientEvent:Connect(function(item)
 
     local tool = playerUtilities.getPlayerTool(item)
     local touchPart = tool.Touch
+    local equipSound = Instance.new("Sound")
+    equipSound.Playing = false
+    equipSound.SoundId = weaponUtilities.Weapons[item].Sounds.Equip
+    equipSound.Volume = 0.2
+    equipSound.Parent = tool
 
     tool.Equipped:Connect(function()
       print("equipped")
+      equipSound:Play()
     end)
-
+  
     tool.Unequipped:Connect(function()
       print("Unequipped")
     end)

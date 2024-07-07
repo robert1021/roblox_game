@@ -2,15 +2,15 @@ module = {
     ["Weapons"] = {
         ["Hammer"] = {
             ["Price"] = 100,
-            ["Damage"] = 10,
-            ["Cooldown"] = 0.5,
+            ["Damage"] = 25,
+            ["Cooldown"] = 0.75,
             ["Animations"] = {
                 ["Swing"] = {
                     "rbxassetid://18349571763"
                 },
             },
             ["Sounds"] = {
-                ["Equip"] = {},
+                ["Equip"] = "rbxassetid://3422592990",
                 ["Unequip"] = {},
                 ["Swing"] = {},
                 
@@ -19,15 +19,15 @@ module = {
         },
         ["Sword"] = {
             ["Price"] = 100,
-            ["Damage"] = 5,
-            ["Cooldown"] = 0.2,
+            ["Damage"] = 10,
+            ["Cooldown"] = 0.1,
             ["Animations"] = {
                 ["Swing"] = {
                     "rbxassetid://18379687671"
                 },
             },
             ["Sounds"] = {
-                ["Equip"] = {},
+                ["Equip"] = "rbxassetid://3422592990",
                 ["Unequip"] = {},
                 ["Swing"] = {},
                 
