@@ -69,6 +69,4 @@ weaponEquippedRemoteEvent.OnClientEvent:Connect(function(item)
     end)
 
 
-    
-    
 end)

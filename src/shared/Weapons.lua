@@ -19,7 +19,20 @@ module = {
         },
         ["Sword"] = {
             ["Price"] = 100,
-            ["Damage"] = 10,
+            ["Damage"] = 5,
+            ["Cooldown"] = 0.2,
+            ["Animations"] = {
+                ["Swing"] = {
+                    "rbxassetid://18379687671"
+                },
+            },
+            ["Sounds"] = {
+                ["Equip"] = {},
+                ["Unequip"] = {},
+                ["Swing"] = {},
+                
+            },
+            ["AnimationSpeed"] = 1.5,
         },
         ["Spear"] = {
             ["Price"] = 150,

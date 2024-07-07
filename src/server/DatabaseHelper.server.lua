@@ -379,7 +379,6 @@ Players.PlayerAdded:Connect(function(player)
 	local data = loadPlayerData(player)
 
 	if data then
-
 		player.CharacterAdded:Connect(function()
 			setLevelRemoteEvent:FireClient(player, data.level)
 			-- Get the percent complete of current level to update the exp bar completion

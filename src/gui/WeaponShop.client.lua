@@ -22,7 +22,10 @@ local buyItemMessageFailed = ReplicatedStorage.RemoteEvents.BuyItemMessageFailed
 
 weaponShopButton.MouseButton1Click:Connect(function()
 	-- close inventory and hide button
-	inventoryGui.Enabled = false
+	if inventoryGui.Enabled then
+		inventoryGui.Enabled = false
+	end
+
 	inventoryButtonGui.Enabled = false
 
 	-- Load weapons

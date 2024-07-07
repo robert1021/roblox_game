@@ -14,6 +14,7 @@ local weaponEquippedRemoteEvent = ReplicatedStorage.RemoteEvents.WeaponEquipped 
 local getPlayerInventoryRemoteFunc = ReplicatedStorage.RemoteFunctions.GetPlayerInventory :: RemoteFunction
 local getPlayerEquippedRemoteFunc = ReplicatedStorage.RemoteFunctions.GetPlayerEquipped :: RemoteFunction
 
+local inventoryGui = guiUtilities.getInventoryGui()
 -- Inventory buttons
 local weaponsButton = guiUtilities.getInventoryWeaponsButton()
 local armorButton = guiUtilities.getInventoryArmorButton()
@@ -21,7 +22,7 @@ local potionsButton = guiUtilities.getInventoryPotionsButton()
 local otherButton = guiUtilities.getInventoryOtherButton()
 
 
-local isInventoryOpen = false
+-- local isInventoryOpen = false
 
 
 -- Functions
@@ -30,9 +31,9 @@ local isInventoryOpen = false
 -- Events
 
 inventoryButton.MouseButton1Click:Connect(function()
-    if not isInventoryOpen then
-        isInventoryOpen = true
+    if not inventoryGui.Enabled then
 
+        guiUtilities.removeItemsInventory()
         -- Load inventory
         local results = getPlayerInventoryRemoteFunc:InvokeServer()
 
@@ -41,10 +42,8 @@ inventoryButton.MouseButton1Click:Connect(function()
         guiUtilities.showInventoryCategory("Weapons")
 
     else
-        isInventoryOpen = false
         guiUtilities.removeItemsInventory()
     end
-
     utility.ToggleInventory()
 end)
 
