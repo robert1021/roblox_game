@@ -12,6 +12,9 @@ local weaponUtilities = require(ReplicatedStorage.Weapons)
 
 
 local weaponEquippedRemoteEvent = ReplicatedStorage.RemoteEvents.WeaponEquipped :: RemoteEvent
+local weaponSwungRemoteEvent = ReplicatedStorage.RemoteEvents.WeaponSwung :: RemoteEvent
+
+local swingDebounce = false
 
 
  -----------------------------
@@ -39,10 +42,30 @@ local weaponEquippedRemoteEvent = ReplicatedStorage.RemoteEvents.WeaponEquipped 
 weaponEquippedRemoteEvent.OnClientEvent:Connect(function(item)
 
     local tool = playerUtilities.getPlayerTool(item)
+    local touchPart = tool.Touch
+
+    tool.Equipped:Connect(function()
+      print("equipped")
+    end)
+
+    tool.Unequipped:Connect(function()
+      print("Unequipped")
+    end)
 
     tool.Activated:Connect(function()
-        local swingTrack = createTrack(weaponUtilities.Weapons[item].Animations.Swing[1])
-        swingTrack:Play()
+
+      if swingDebounce then return end
+
+      swingDebounce = true
+      local swingTrack = createTrack(weaponUtilities.Weapons[item].Animations.Swing[1])
+      swingTrack:Play()
+      swingTrack:AdjustSpeed(weaponUtilities.Weapons[item].AnimationSpeed)
+      weaponSwungRemoteEvent:FireServer(item, touchPart)
+      swingTrack.Ended:Wait()
+      swingTrack:Destroy()
+      task.wait(weaponUtilities.Weapons[item].Cooldown)
+      swingDebounce = false
+
     end)
 
 

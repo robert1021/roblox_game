@@ -14,7 +14,8 @@ module = {
                 ["Unequip"] = {},
                 ["Swing"] = {},
                 
-            }
+            },
+            ["AnimationSpeed"] = 1.5,
         },
         ["Sword"] = {
             ["Price"] = 100,
