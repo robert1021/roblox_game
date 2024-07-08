@@ -7,6 +7,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 -----------------------------
   -- VARIABLES --
  -----------------------------
+local utilities = require(ReplicatedStorage.UtilityModuleScript)
 local playerUtilities = require(ReplicatedStorage.PlayerUtilities)
 local weaponUtilities = require(ReplicatedStorage.Weapons)
 
@@ -43,11 +44,8 @@ weaponEquippedRemoteEvent.OnClientEvent:Connect(function(item)
 
     local tool = playerUtilities.getPlayerTool(item)
     local touchPart = tool.Touch
-    local equipSound = Instance.new("Sound")
-    equipSound.Playing = false
-    equipSound.SoundId = weaponUtilities.Weapons[item].Sounds.Equip
-    equipSound.Volume = 0.2
-    equipSound.Parent = tool
+    local equipSound = utilities.createSound(tool, weaponUtilities.Weapons[item].Sounds.Equip, 0.2)
+    local swingSound = utilities.createSound(tool, weaponUtilities.Weapons[item].Sounds.Swing, 0.2)
 
     tool.Equipped:Connect(function()
       print("equipped")
@@ -66,6 +64,7 @@ weaponEquippedRemoteEvent.OnClientEvent:Connect(function(item)
       local swingTrack = createTrack(weaponUtilities.Weapons[item].Animations.Swing[1])
       swingTrack:Play()
       swingTrack:AdjustSpeed(weaponUtilities.Weapons[item].AnimationSpeed)
+      swingSound:Play()
       weaponSwungRemoteEvent:FireServer(item, touchPart)
       swingTrack.Ended:Wait()
       swingTrack:Destroy()

@@ -12,7 +12,8 @@ module = {
             ["Sounds"] = {
                 ["Equip"] = "rbxassetid://3422592990",
                 ["Unequip"] = {},
-                ["Swing"] = {},
+                ["Swing"] = "",
+                ["Hit"] = "rbxassetid://4529474217"
                 
             },
             ["AnimationSpeed"] = 1.5,
@@ -29,7 +30,8 @@ module = {
             ["Sounds"] = {
                 ["Equip"] = "rbxassetid://3422592990",
                 ["Unequip"] = {},
-                ["Swing"] = {},
+                ["Swing"] = "rbxassetid://5789211405",
+                ["Hit"] = "rbxassetid://9119560786"
                 
             },
             ["AnimationSpeed"] = 1.5,

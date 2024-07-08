@@ -8,6 +8,7 @@ local Players = game:GetService("Players")
 -----------------------------
 -- VARIABLES --
 -----------------------------
+local utilities = require(ReplicatedStorage.UtilityModuleScript)
 local weaponUtilities = require(ReplicatedStorage.Weapons)
 
 local weaponSwungRemoteEvent = ReplicatedStorage.RemoteEvents.WeaponSwung :: RemoteEvent
@@ -28,11 +29,11 @@ local swinging = false
 -----------------------------
 
 weaponSwungRemoteEvent.OnServerEvent:Connect(function(player, item, touchPart)
+    local hitSound = utilities.createSound(touchPart.Parent, weaponUtilities.Weapons[item].Sounds.Hit, 0.5)
+
     if player.Name ~= touchPart.Parent.Parent.Name then return end
     if swinging then return end
     swinging = true
-    -- -- Play sounds
-    -- print("playing sound...")
 
     local stop = false
     -- Spawn a thread to check for touching parts
@@ -50,6 +51,8 @@ weaponSwungRemoteEvent.OnServerEvent:Connect(function(player, item, touchPart)
                     end
     
                     if humanoidName ~= player.Name then
+                        hitSound:Play()
+                        hitSound.Ended:Connect(function() hitSound:Destroy() end)
                         humanoid:TakeDamage(weaponUtilities.Weapons[item].Damage)
                         stop = true
                         break
@@ -60,10 +63,11 @@ weaponSwungRemoteEvent.OnServerEvent:Connect(function(player, item, touchPart)
             task.wait(0.1)
         end
     end)
-    -- Wait for animation to stop - make this dynamic
+
+    -- stop loop
     task.spawn(function()
         task.wait(0.4)
-    stop = true
+        stop = true
     end)
     
     task.wait(weaponUtilities.Weapons[item].Cooldown)

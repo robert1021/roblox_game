@@ -41,6 +41,7 @@ function module.addItemsInventory(items)
     local weapons = require(ReplicatedStorage.Weapons)
     local utility = require(ReplicatedStorage.UtilityModuleScript)
     local playerUtilities = require(ReplicatedStorage.PlayerUtilities)
+    local inventoryUtilities = require(ReplicatedStorage.InventoryUtilities)
     local inventory = module.getInventoryGui()
     local equipItemRemoteEvent = ReplicatedStorage.RemoteEvents.EquipItem
     local unequipItemRemoteEvent = ReplicatedStorage.RemoteEvents.UnequipItem
@@ -57,7 +58,9 @@ function module.addItemsInventory(items)
                 inventoryFrame.ItemCount.Text = v["count"]
     
                 inventoryFrame.EquipButton.MouseButton1Click:Connect(function()
-
+                    local sound = utility.createSound(inventoryFrame.EquipButton, inventoryUtilities.Sounds.Equip, 0.5)
+                    sound:Play()
+                    sound.Ended:Connect(function() sound:Destroy() end)
                     -- Fire event to add item to equipped in database
                     equipItemRemoteEvent:FireServer(weapon, "weapon")
                     inventoryFrame.UnequipButton.Visible = true
@@ -65,6 +68,9 @@ function module.addItemsInventory(items)
                 end)
 
                 inventoryFrame.UnequipButton.MouseButton1Click:Connect(function()
+                    local sound = utility.createSound(inventoryFrame.UnequipButton, inventoryUtilities.Sounds.Equip, 0.5)
+                    sound:Play()
+                    sound.Ended:Connect(function() sound:Destroy() end)
 
                     -- Remove from backback
                     playerUtilities.removeToolFromPlayer(player, weapon)

@@ -4,6 +4,7 @@ local tools = ReplicatedStorage.Tools
 local utility = require(ReplicatedStorage.UtilityModuleScript)
 local playerUtilities = require(ReplicatedStorage.PlayerUtilities)
 local guiUtilities = require(ReplicatedStorage.GuiUtilities)
+local inventoryUtilities = require(ReplicatedStorage.InventoryUtilities)
 local inventoryButton = guiUtilities.getInventoryButton()
 local updatePlayerGoldInventoryRemoteEvent = ReplicatedStorage.UpdatePlayerGoldInventoryRemoteEvent :: RemoteEvent
 local loadPlayerBackpackRemoteEvent = ReplicatedStorage.RemoteEvents.LoadPlayerBackpack :: RemoteEvent
@@ -31,6 +32,9 @@ local otherButton = guiUtilities.getInventoryOtherButton()
 -- Events
 
 inventoryButton.MouseButton1Click:Connect(function()
+    local sound = utility.createSound(weaponsButton, inventoryUtilities.Sounds.Equip, 0.5)
+    sound:Play()
+    sound.Ended:Connect(function() sound:Destroy() end)
     if not inventoryGui.Enabled then
 
         guiUtilities.removeItemsInventory()
@@ -49,24 +53,36 @@ end)
 
 
 weaponsButton.MouseButton1Click:Connect(function()
+    local sound = utility.createSound(weaponsButton, inventoryUtilities.Sounds.Equip, 0.5)
+    sound:Play()
+    sound.Ended:Connect(function() sound:Destroy() end)
     guiUtilities.selectInventoryCategoryButton("Weapons")
     guiUtilities.showInventoryCategory("Weapons")
 end)
 
 
 armorButton.MouseButton1Click:Connect(function()
+    local sound = utility.createSound(weaponsButton, inventoryUtilities.Sounds.Equip, 0.5)
+    sound:Play()
+    sound.Ended:Connect(function() sound:Destroy() end)
     guiUtilities.selectInventoryCategoryButton("Armor")
     guiUtilities.showInventoryCategory("Armor")
 end)
 
 
 potionsButton.MouseButton1Click:Connect(function()
+    local sound = utility.createSound(weaponsButton, inventoryUtilities.Sounds.Equip, 0.5)
+    sound:Play()
+    sound.Ended:Connect(function() sound:Destroy() end)
     guiUtilities.selectInventoryCategoryButton("Potions")
     guiUtilities.showInventoryCategory("Potions")
 end)
 
 
 otherButton.MouseButton1Click:Connect(function()
+    local sound = utility.createSound(weaponsButton, inventoryUtilities.Sounds.Equip, 0.5)
+    sound:Play()
+    sound.Ended:Connect(function() sound:Destroy() end)
     guiUtilities.selectInventoryCategoryButton("Other")
     guiUtilities.showInventoryCategory("Other")
 end)
