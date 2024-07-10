@@ -2,6 +2,14 @@ local module = {}
 
 
 
+function module.createSound(parent, soundId, volume)
+	local sound = Instance.new("Sound")
+    sound.Playing = false
+    sound.SoundId = soundId
+    sound.Volume = volume
+    sound.Parent = parent
+	return sound
+end
 
 
 function module.getBuyItemSuccessSound()

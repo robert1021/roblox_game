@@ -10,6 +10,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local utilities = require(ReplicatedStorage.UtilityModuleScript)
 local playerUtilities = require(ReplicatedStorage.PlayerUtilities)
 local weaponUtilities = require(ReplicatedStorage.Weapons)
+local soundUtilities = require(ReplicatedStorage.SoundUtilities)
 
 
 local weaponEquippedRemoteEvent = ReplicatedStorage.RemoteEvents.WeaponEquipped :: RemoteEvent
@@ -44,8 +45,8 @@ weaponEquippedRemoteEvent.OnClientEvent:Connect(function(item)
 
     local tool = playerUtilities.getPlayerTool(item)
     local touchPart = tool.Touch
-    local equipSound = utilities.createSound(tool, weaponUtilities.Weapons[item].Sounds.Equip, 0.2)
-    local swingSound = utilities.createSound(tool, weaponUtilities.Weapons[item].Sounds.Swing, 0.2)
+    local equipSound = soundUtilities.createSound(tool, weaponUtilities.Weapons[item].Sounds.Equip, 0.2)
+    local swingSound = soundUtilities.createSound(tool, weaponUtilities.Weapons[item].Sounds.Swing, 0.2)
 
     tool.Equipped:Connect(function()
       print("equipped")

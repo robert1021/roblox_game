@@ -17,6 +17,7 @@ local updateExpBarCompletionRemoteEvent = ReplicatedStorage.UpdateExpBarCompleti
 -- Listen for event from database handler
 
 setLevelRemoteEvent.OnClientEvent:Connect(function(level)
+    print(level)
     levelText.Text = "Level " .. level
 end)
 

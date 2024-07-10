@@ -2,6 +2,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local DataStoreService = game:GetService("DataStoreService")
 
 
+
 local PlayerDataStore = DataStoreService:GetDataStore("PlayerDataStore")
 local Players = game:GetService("Players")
 
@@ -31,6 +32,7 @@ local dropItemRemoteEvent = ReplicatedStorage.RemoteEvents.DropItem :: RemoteEve
 local updateInventoryRemoteEvent = ReplicatedStorage.RemoteEvents.UpdateInventory :: RemoteEvent
 local removeToolFromPlayerRemoteEvent = ReplicatedStorage.RemoteEvents.RemoveToolFromPlayer :: RemoteEvent
 local removeAllToolsFromPlayer = ReplicatedStorage.RemoteEvents.RemoveAllToolsFromPlayer :: RemoteEvent
+local closeAfkAreaRemoteEvent = ReplicatedStorage.RemoteEvents.CloseAFKArea :: RemoteEvent
 -- Remote Functions
 local getPlayerInventoryRemoteFunc = ReplicatedStorage.RemoteFunctions.GetPlayerInventory
 local getPlayerEquippedRemoteFunc = ReplicatedStorage.RemoteFunctions.GetPlayerEquipped :: RemoteFunction
@@ -379,23 +381,28 @@ Players.PlayerAdded:Connect(function(player)
 	local data = loadPlayerData(player)
 
 	if data then
+
 		player.CharacterAdded:Connect(function()
+			task.wait(0.2)
 			setLevelRemoteEvent:FireClient(player, data.level)
 			-- Get the percent complete of current level to update the exp bar completion
 			local expTable = require(ReplicatedStorage.ExpTable)
 			local percent = expTable.CalculatePercentLevelComplete(data.level, data.exp)
 			updateExpBarCompletionRemoteEvent:FireClient(player, percent)
+			
 			updatePlayerGoldInventoryRemoteEvent:FireClient(player, getPlayerGold(player))
 		
 			local equipped = getPlayerEquipped(player)
 			
-			 -- Equip and add events for all equipped weapons
+				-- Equip and add events for all equipped weapons
 			for _, v in ipairs(equipped) do
 				equipItem(player, v)
 				weaponEquippedRemoteEvent:FireClient(player, v)
 			end
-		
-		end)
+
+			-- Fire this event to client in case player was afk and reset character
+			closeAfkAreaRemoteEvent:FireClient(player)
+			end)
 		
 	else
 		warn("Failed to initialize player data for player:", utility.GetPlayerName(player))
@@ -501,6 +508,7 @@ dropItemRemoteEvent.OnServerEvent:Connect(function(player, item, dropAmount)
 	
 	
 end)
+
 
 -- Remote Functions
 

@@ -16,6 +16,12 @@ local afkGui = guiUtilities.getAFKGui()
 local afkAreaButton = guiUtilities.getAFKAreaButton()
 local afkAreaLeaveButton = guiUtilities.getAfkAreaLeaveButton()
 local afkAreaTimeLabel = guiUtilities.getAfkAreaTimeLabel()
+local afkAreaGoldEarnedLabel = guiUtilities.getAfkAreaGoldEarnedLabel()
+local afkAreaExpEarnedLabel = guiUtilities.getAfkAreaExpEarnedLabel()
+
+local addExpRemoteEvent = ReplicatedStorage.AddExpRemoteEvent :: RemoteEvent
+local addPlayerGoldRemoteEvent = ReplicatedStorage.AddPlayerGoldRemoteEvent :: RemoteEvent
+local closeAfkAreaRemoteEvent = ReplicatedStorage.RemoteEvents.CloseAFKArea :: RemoteEvent
 
 -----------------------------
 -- FUNCTIONS --
@@ -28,18 +34,19 @@ local afkAreaTimeLabel = guiUtilities.getAfkAreaTimeLabel()
 
 afkAreaButton.MouseButton1Click:Connect(function()
     afkAreaTimeLabel.Text = "00:00"
+    afkAreaGoldEarnedLabel.Text = "0"
+    afkAreaExpEarnedLabel.Text = "0"
     afkGui.Enabled = true
-    StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
-
-    
-
+    StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, false)
 end)
 
 
 afkAreaLeaveButton.MouseButton1Click:Connect(function()
     afkAreaTimeLabel.Text = "00:00"
+    afkAreaGoldEarnedLabel.Text = "0"
+    afkAreaExpEarnedLabel.Text = "0"
     afkGui.Enabled = false
-    StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, true)
+    StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
 end)
 
 
@@ -47,14 +54,17 @@ afkGui:GetPropertyChangedSignal("Enabled"):Connect(function()
     local hours = 0
     local minutes = 0
     local seconds = 0
+    local rewardPlayer = false
 
     while afkGui.Enabled do
         task.wait(1)
         seconds += 1
+        rewardPlayer = false
 
         if seconds == 60 then
             seconds = 0
             minutes += 1
+            rewardPlayer = true
         end
 
         if minutes == 60 then
@@ -85,11 +95,27 @@ afkGui:GetPropertyChangedSignal("Enabled"):Connect(function()
             afkAreaTimeLabel.Text = minutesFormatted .. ":" .. secondsFormatted
         end
 
-        print("Gained gold")
-        -- TODO: Gain gold
+        -- TODO: Gain gold and exp
+        if rewardPlayer then
+
+            afkAreaGoldEarnedLabel.Text = tonumber(afkAreaGoldEarnedLabel.Text) + 5
+            afkAreaExpEarnedLabel.Text = tonumber(afkAreaExpEarnedLabel.Text) + 25
+
+            addPlayerGoldRemoteEvent:FireServer(5)
+            addExpRemoteEvent:FireServer(25)
+        end
         
     end
 
 
+end)
+
+
+closeAfkAreaRemoteEvent.OnClientEvent:Connect(function()
+    afkGui.Enabled = false
+    afkAreaTimeLabel.Text = "00:00"
+    afkAreaGoldEarnedLabel.Text = "0"
+    afkAreaExpEarnedLabel.Text = "0"
+    StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
 end)
 

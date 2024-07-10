@@ -88,6 +88,11 @@ function module.removeAllToolsFromPlayer(player)
 end
 
 
+function module.getPlayerGui(player)
+    return player:WaitForChild("PlayerGui")
+end
+
+
 
 -- function module.dropToolFromPlayer(player, tool)
 

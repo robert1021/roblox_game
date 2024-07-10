@@ -10,6 +10,7 @@ local Players = game:GetService("Players")
 -----------------------------
 local utilities = require(ReplicatedStorage.UtilityModuleScript)
 local weaponUtilities = require(ReplicatedStorage.Weapons)
+local soundUtilities = require(ReplicatedStorage.SoundUtilities)
 
 local weaponSwungRemoteEvent = ReplicatedStorage.RemoteEvents.WeaponSwung :: RemoteEvent
 
@@ -29,7 +30,7 @@ local swinging = false
 -----------------------------
 
 weaponSwungRemoteEvent.OnServerEvent:Connect(function(player, item, touchPart)
-    local hitSound = utilities.createSound(touchPart.Parent, weaponUtilities.Weapons[item].Sounds.Hit, 0.5)
+    local hitSound = soundUtilities.createSound(touchPart.Parent, weaponUtilities.Weapons[item].Sounds.Hit, 0.5)
 
     if player.Name ~= touchPart.Parent.Parent.Name then return end
     if swinging then return end

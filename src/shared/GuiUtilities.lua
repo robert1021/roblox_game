@@ -42,6 +42,7 @@ function module.addItemsInventory(items)
     local utility = require(ReplicatedStorage.UtilityModuleScript)
     local playerUtilities = require(ReplicatedStorage.PlayerUtilities)
     local inventoryUtilities = require(ReplicatedStorage.InventoryUtilities)
+    local soundUtilities = require(ReplicatedStorage.SoundUtilities)
     local inventory = module.getInventoryGui()
     local equipItemRemoteEvent = ReplicatedStorage.RemoteEvents.EquipItem
     local unequipItemRemoteEvent = ReplicatedStorage.RemoteEvents.UnequipItem
@@ -58,7 +59,7 @@ function module.addItemsInventory(items)
                 inventoryFrame.ItemCount.Text = v["count"]
     
                 inventoryFrame.EquipButton.MouseButton1Click:Connect(function()
-                    local sound = utility.createSound(inventoryFrame.EquipButton, inventoryUtilities.Sounds.Equip, 0.5)
+                    local sound = soundUtilities.createSound(inventoryFrame.EquipButton, inventoryUtilities.Sounds.Equip, 0.5)
                     sound:Play()
                     sound.Ended:Connect(function() sound:Destroy() end)
                     -- Fire event to add item to equipped in database
@@ -68,7 +69,7 @@ function module.addItemsInventory(items)
                 end)
 
                 inventoryFrame.UnequipButton.MouseButton1Click:Connect(function()
-                    local sound = utility.createSound(inventoryFrame.UnequipButton, inventoryUtilities.Sounds.Equip, 0.5)
+                    local sound = soundUtilities.createSound(inventoryFrame.UnequipButton, inventoryUtilities.Sounds.Equip, 0.5)
                     sound:Play()
                     sound.Ended:Connect(function() sound:Destroy() end)
 
@@ -267,5 +268,16 @@ end
 function module.getAfkAreaTimeLabel()
     return module.getAFKGui().Frame.TimeFrame.TimeLabel
 end
+
+
+function module.getAfkAreaGoldEarnedLabel()
+    return module.getAFKGui().Frame.RewardsFrame.GoldEarnedLabel
+end
+
+
+function module.getAfkAreaExpEarnedLabel()
+    return module.getAFKGui().Frame.RewardsFrame.ExpEarnedLabel
+end
+
 
 return module
