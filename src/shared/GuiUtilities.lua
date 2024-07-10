@@ -249,4 +249,23 @@ function module.animateShopButton(button)
 	
 end
 
+function module.getAFKGui()
+    return game.Players.LocalPlayer.PlayerGui:FindFirstChild("AFKGui")
+end
+
+
+function module.getAFKAreaButton()
+    return game.Players.LocalPlayer.PlayerGui:FindFirstChild("AFKButtonGui").TextButton
+end
+
+
+function module.getAfkAreaLeaveButton()
+    return module.getAFKGui().Frame.TextButton
+end
+
+
+function module.getAfkAreaTimeLabel()
+    return module.getAFKGui().Frame.TimeFrame.TimeLabel
+end
+
 return module
