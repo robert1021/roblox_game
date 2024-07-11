@@ -10,6 +10,10 @@ local StarterGui = game:GetService("StarterGui")
 -----------------------------
 local utilities = require(ReplicatedStorage.UtilityModuleScript)
 local guiUtilities = require(ReplicatedStorage.GuiUtilities)
+local soundUtilities = require(ReplicatedStorage.SoundUtilities)
+local afkUtilities = require(ReplicatedStorage.AfkUtilities)
+local playerUtilities = require(ReplicatedStorage.PlayerUtilities)
+local teleportUtilities = require(ReplicatedStorage.TeleportUtilities)
 
 
 local afkGui = guiUtilities.getAFKGui()
@@ -18,6 +22,8 @@ local afkAreaLeaveButton = guiUtilities.getAfkAreaLeaveButton()
 local afkAreaTimeLabel = guiUtilities.getAfkAreaTimeLabel()
 local afkAreaGoldEarnedLabel = guiUtilities.getAfkAreaGoldEarnedLabel()
 local afkAreaExpEarnedLabel = guiUtilities.getAfkAreaExpEarnedLabel()
+
+local sound = soundUtilities.createSound(afkGui, afkUtilities.Sounds.Reward, 0.5)
 
 local addExpRemoteEvent = ReplicatedStorage.AddExpRemoteEvent :: RemoteEvent
 local addPlayerGoldRemoteEvent = ReplicatedStorage.AddPlayerGoldRemoteEvent :: RemoteEvent
@@ -36,6 +42,7 @@ afkAreaButton.MouseButton1Click:Connect(function()
     afkAreaTimeLabel.Text = "00:00"
     afkAreaGoldEarnedLabel.Text = "0"
     afkAreaExpEarnedLabel.Text = "0"
+    playerUtilities.DisablePlayerMovement(playerUtilities.GetLocalPlayer())
     afkGui.Enabled = true
     StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, false)
 end)
@@ -45,6 +52,7 @@ afkAreaLeaveButton.MouseButton1Click:Connect(function()
     afkAreaTimeLabel.Text = "00:00"
     afkAreaGoldEarnedLabel.Text = "0"
     afkAreaExpEarnedLabel.Text = "0"
+    playerUtilities.EnablePlayerMovement(playerUtilities.GetLocalPlayer())
     afkGui.Enabled = false
     StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
 end)
@@ -97,13 +105,16 @@ afkGui:GetPropertyChangedSignal("Enabled"):Connect(function()
 
         -- TODO: Gain gold and exp
         if rewardPlayer then
-
+            sound:Play()
             afkAreaGoldEarnedLabel.Text = tonumber(afkAreaGoldEarnedLabel.Text) + 5
             afkAreaExpEarnedLabel.Text = tonumber(afkAreaExpEarnedLabel.Text) + 25
 
             addPlayerGoldRemoteEvent:FireServer(5)
             addExpRemoteEvent:FireServer(25)
         end
+
+        -- Fire some sort of event to teleport player to same spot in afk area to get around being kicked
+        -- should fire every 19 minutes or so - roblox kicks players at 20 min inactivity
         
     end
 
@@ -112,6 +123,7 @@ end)
 
 
 closeAfkAreaRemoteEvent.OnClientEvent:Connect(function()
+    playerUtilities.EnablePlayerMovement(playerUtilities.GetLocalPlayer())
     afkGui.Enabled = false
     afkAreaTimeLabel.Text = "00:00"
     afkAreaGoldEarnedLabel.Text = "0"

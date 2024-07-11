@@ -1,6 +1,8 @@
 local module = {
 	["startAreaId"] = 17872213831,
-	["BattleAreaID"] = 17872891022
+	["BattleAreaID"] = 17872891022,
+	["AFKAreaID"] = 18433863109,
+	["AFKArea2ID"] = 18433985988,
 }
 
 function module.GetHumanoidFromPart(part)
@@ -276,6 +278,25 @@ function module.GetIsBattleArea()
 		return false
 	end
 end
+
+
+function module.getIsAFKArea()
+	if game.PlaceId == module.AFKAreaID then
+		return true
+	else
+		return false
+	end
+end
+
+
+function module.getIsAFKArea2()
+	if game.PlaceId == module.AFKArea2ID then
+		return true
+	else
+		return false
+	end
+end
+
 
 function module.GetLengthHashTable(tbl)
 	local count = 0

@@ -1,4 +1,3 @@
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local module = {
 
 }
@@ -17,6 +16,18 @@ end
 function module.TeleportPlayerToTownArea(player)
     local utility = require(game:GetService("ReplicatedStorage").UtilityModuleScript)
 	module.TeleportPlayer(utility.startAreaId, player)
+end
+
+
+function module.teleportPlayerToAFKArea(player)
+    local utility = require(game:GetService("ReplicatedStorage").UtilityModuleScript)
+	module.TeleportPlayer(utility.AFKAreaID, player)
+end
+
+
+function module.teleportPlayerToAFKArea2(player)
+    local utility = require(game:GetService("ReplicatedStorage").UtilityModuleScript)
+	module.TeleportPlayer(utility.AFKArea2ID, player)
 end
 
 function module.GetBattleAreaTeleportModel()
