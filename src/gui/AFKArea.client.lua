@@ -27,7 +27,13 @@ local sound = soundUtilities.createSound(afkGui, afkUtilities.Sounds.Reward, 0.5
 
 local addExpRemoteEvent = ReplicatedStorage.AddExpRemoteEvent :: RemoteEvent
 local addPlayerGoldRemoteEvent = ReplicatedStorage.AddPlayerGoldRemoteEvent :: RemoteEvent
+local openAfkAreaRemoteEvent = ReplicatedStorage.RemoteEvents.OpenAFKArea :: RemoteEvent
 local closeAfkAreaRemoteEvent = ReplicatedStorage.RemoteEvents.CloseAFKArea :: RemoteEvent
+local resetAfkAreaTimeRemoteEvent = ReplicatedStorage.RemoteEvents.ResetAFKAreaTime :: RemoteEvent
+local updateAfkAreaTimeRemoteEvent = ReplicatedStorage.RemoteEvents.UpdateAFKAreaTime :: RemoteEvent
+
+local afkAreaNum = 1
+local totalMinutes = 0
 
 -----------------------------
 -- FUNCTIONS --
@@ -39,22 +45,27 @@ local closeAfkAreaRemoteEvent = ReplicatedStorage.RemoteEvents.CloseAFKArea :: R
 -----------------------------
 
 afkAreaButton.MouseButton1Click:Connect(function()
-    afkAreaTimeLabel.Text = "00:00"
-    afkAreaGoldEarnedLabel.Text = "0"
-    afkAreaExpEarnedLabel.Text = "0"
+    -- afkAreaTimeLabel.Text = "00:00"
+    -- afkAreaGoldEarnedLabel.Text = "0"
+    -- afkAreaExpEarnedLabel.Text = "0"
+    -- playerUtilities.DisablePlayerMovement(playerUtilities.GetLocalPlayer())
+    -- afkGui.Enabled = true
+    -- StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, false)
+    resetAfkAreaTimeRemoteEvent:FireServer()
     playerUtilities.DisablePlayerMovement(playerUtilities.GetLocalPlayer())
-    afkGui.Enabled = true
-    StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, false)
+    teleportUtilities.teleportPlayerToAFKArea()
 end)
 
 
 afkAreaLeaveButton.MouseButton1Click:Connect(function()
-    afkAreaTimeLabel.Text = "00:00"
-    afkAreaGoldEarnedLabel.Text = "0"
-    afkAreaExpEarnedLabel.Text = "0"
+    -- afkAreaTimeLabel.Text = "00:00"
+    -- afkAreaGoldEarnedLabel.Text = "0"
+    -- afkAreaExpEarnedLabel.Text = "0"
+    resetAfkAreaTimeRemoteEvent:FireServer()
     playerUtilities.EnablePlayerMovement(playerUtilities.GetLocalPlayer())
-    afkGui.Enabled = false
+    -- afkGui.Enabled = false
     StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
+    teleportUtilities.TeleportPlayerToTownArea(playerUtilities.GetLocalPlayer())
 end)
 
 
@@ -113,16 +124,41 @@ afkGui:GetPropertyChangedSignal("Enabled"):Connect(function()
             addExpRemoteEvent:FireServer(25)
         end
 
+        -- TODO:
         -- Fire some sort of event to teleport player to same spot in afk area to get around being kicked
-        -- should fire every 19 minutes or so - roblox kicks players at 20 min inactivity
-        
-    end
+        -- Fire every 15 minutes or so - roblox kicks players at 20 min inactivity
 
+        if minutes == 15 then
+            updateAfkAreaTimeRemoteEvent:FireServer(15)
+            if afkAreaNum == 1 then
+                teleportUtilities.teleportPlayerToAFKArea2(playerUtilities.GetLocalPlayer())
+            elseif afkAreaNum == 2 then
+                teleportUtilities.teleportPlayerToAFKArea(playerUtilities.GetLocalPlayer())
+            end
+        end
+
+    end
 
 end)
 
 
+openAfkAreaRemoteEvent.OnClientEvent:Connect(function(num, minutes)
+    -- set global variable tracking afk area
+    afkAreaNum = num
+    totalMinutes = minutes
+    print(totalMinutes)
+
+    afkAreaTimeLabel.Text = "00:00"
+    afkAreaGoldEarnedLabel.Text = "0"
+    afkAreaExpEarnedLabel.Text = "0"
+    playerUtilities.DisablePlayerMovement(playerUtilities.GetLocalPlayer())
+    afkGui.Enabled = true
+    StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, false)
+end)
+
+
 closeAfkAreaRemoteEvent.OnClientEvent:Connect(function()
+    resetAfkAreaTimeRemoteEvent:FireServer()
     playerUtilities.EnablePlayerMovement(playerUtilities.GetLocalPlayer())
     afkGui.Enabled = false
     afkAreaTimeLabel.Text = "00:00"

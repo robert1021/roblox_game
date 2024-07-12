@@ -10,6 +10,7 @@ local utility = require(ReplicatedStorage.UtilityModuleScript)
 local playerUtilities = require(ReplicatedStorage.PlayerUtilities)
 local weaponUtilities = require(ReplicatedStorage.Weapons)
 local guiUtilities = require(ReplicatedStorage.GuiUtilities)
+local teleportUtilities = require(ReplicatedStorage.TeleportUtilities)
 
 local tools = ReplicatedStorage.Tools
 
@@ -32,10 +33,14 @@ local dropItemRemoteEvent = ReplicatedStorage.RemoteEvents.DropItem :: RemoteEve
 local updateInventoryRemoteEvent = ReplicatedStorage.RemoteEvents.UpdateInventory :: RemoteEvent
 local removeToolFromPlayerRemoteEvent = ReplicatedStorage.RemoteEvents.RemoveToolFromPlayer :: RemoteEvent
 local removeAllToolsFromPlayer = ReplicatedStorage.RemoteEvents.RemoveAllToolsFromPlayer :: RemoteEvent
+local openAfkAreaRemoteEvent = ReplicatedStorage.RemoteEvents.OpenAFKArea :: RemoteEvent
 local closeAfkAreaRemoteEvent = ReplicatedStorage.RemoteEvents.CloseAFKArea :: RemoteEvent
+local resetAfkAreaTimeRemoteEvent = ReplicatedStorage.RemoteEvents.ResetAFKAreaTime :: RemoteEvent
+local updateAfkAreaTimeRemoteEvent = ReplicatedStorage.RemoteEvents.UpdateAFKAreaTime :: RemoteEvent
 -- Remote Functions
 local getPlayerInventoryRemoteFunc = ReplicatedStorage.RemoteFunctions.GetPlayerInventory
 local getPlayerEquippedRemoteFunc = ReplicatedStorage.RemoteFunctions.GetPlayerEquipped :: RemoteFunction
+local getPlayer
 
 
 
@@ -51,6 +56,9 @@ local function createPlayerData(player)
 			["armor"] = {},
 			["potions"] = {}
 
+		},
+		["afkAreaTime"] = {
+			["minute"] = 0,
 		},
 	}
 	
@@ -375,6 +383,51 @@ local function removePlayerWeapons(player, weapon, amount)
 end
 
 
+local function resetPlayerAFKAreaTime(player)
+	local success, results = pcall(function()
+		return PlayerDataStore:UpdateAsync(utility.GetDataStoreKey(player), function()
+			local data = loadPlayerData(player)
+			data.afkAreaTime.minute = 0
+		
+			return data
+		end)
+	end)
+
+	if success then
+		print("Reset " .. " minutes " .. " to 0 for " .. utility.GetPlayerName(player))
+	else
+		warn("Failed to reset time for player:", utility.GetPlayerName(player))
+	end
+end
+
+
+local function addPlayerAFKAreaTime(player, minutes)
+	local success, results = pcall(function()
+		return PlayerDataStore:UpdateAsync(utility.GetDataStoreKey(player), function()
+			local data = loadPlayerData(player)
+			data.afkAreaTime.minute = data.afkAreaTime.minute + minutes
+		
+			return data
+		end)
+	end)
+
+	if success then
+		print("Added " .. minutes .. " minutes " .. " to " .. utility.GetPlayerName(player))
+	else
+		warn("Failed to add time to player:", utility.GetPlayerName(player))
+	end
+end
+
+
+local function getPlayerAFKAreaTime(player)
+	local data = loadPlayerData(player)
+
+	if data ~= nil then return data.afkAreaTime.minute end
+end
+
+
+
+
 -- Events
 
 Players.PlayerAdded:Connect(function(player)
@@ -382,27 +435,52 @@ Players.PlayerAdded:Connect(function(player)
 
 	if data then
 
-		player.CharacterAdded:Connect(function()
-			task.wait(0.2)
-			setLevelRemoteEvent:FireClient(player, data.level)
-			-- Get the percent complete of current level to update the exp bar completion
-			local expTable = require(ReplicatedStorage.ExpTable)
-			local percent = expTable.CalculatePercentLevelComplete(data.level, data.exp)
-			updateExpBarCompletionRemoteEvent:FireClient(player, percent)
+		player.CharacterAdded:Connect(function(character)
+			local humanoid = character:WaitForChild("Humanoid")
+			-- TODO: Need to check if in any of the AFK Areas
+			if utility.getIsAFKArea() then
+				humanoid.Died:Connect(function()
+					resetPlayerAFKAreaTime(player)
+					teleportUtilities.TeleportPlayerToTownArea(player)
+				end)
+
+				local minutes = getPlayerAFKAreaTime(player)
+				openAfkAreaRemoteEvent:FireClient(player, 1, minutes)
+				print("afk1")
+				
+			elseif utility.getIsAFKArea2() then
+				humanoid.Died:Connect(function()
+					resetPlayerAFKAreaTime(player)
+					teleportUtilities.TeleportPlayerToTownArea(player)
+				end)
+
+				local minutes = getPlayerAFKAreaTime(player)
+				openAfkAreaRemoteEvent:FireClient(player, 2, minutes)
+				print("afk2")
+			else
+				task.wait(0.2)
+				setLevelRemoteEvent:FireClient(player, data.level)
+				-- Get the percent complete of current level to update the exp bar completion
+				local expTable = require(ReplicatedStorage.ExpTable)
+				local percent = expTable.CalculatePercentLevelComplete(data.level, data.exp)
+				updateExpBarCompletionRemoteEvent:FireClient(player, percent)
+				
+				updatePlayerGoldInventoryRemoteEvent:FireClient(player, getPlayerGold(player))
 			
-			updatePlayerGoldInventoryRemoteEvent:FireClient(player, getPlayerGold(player))
-		
-			local equipped = getPlayerEquipped(player)
-			
-				-- Equip and add events for all equipped weapons
-			for _, v in ipairs(equipped) do
-				equipItem(player, v)
-				weaponEquippedRemoteEvent:FireClient(player, v)
+				local equipped = getPlayerEquipped(player)
+				
+					-- Equip and add events for all equipped weapons
+				for _, v in ipairs(equipped) do
+					equipItem(player, v)
+					weaponEquippedRemoteEvent:FireClient(player, v)
+				end
+
+				-- Fire this event to client in case player was afk and reset character
+				closeAfkAreaRemoteEvent:FireClient(player)
+				
 			end
 
-			-- Fire this event to client in case player was afk and reset character
-			closeAfkAreaRemoteEvent:FireClient(player)
-			end)
+		end)
 		
 	else
 		warn("Failed to initialize player data for player:", utility.GetPlayerName(player))
@@ -507,6 +585,16 @@ dropItemRemoteEvent.OnServerEvent:Connect(function(player, item, dropAmount)
 	end
 	
 	
+end)
+
+
+resetAfkAreaTimeRemoteEvent.OnServerEvent:Connect(function(player)
+	resetPlayerAFKAreaTime(player)
+end)
+
+
+updateAfkAreaTimeRemoteEvent.OnServerEvent:Connect(function(player, minutes)
+	addPlayerAFKAreaTime(player, minutes)
 end)
 
 
