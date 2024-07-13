@@ -40,7 +40,7 @@ local updateAfkAreaTimeRemoteEvent = ReplicatedStorage.RemoteEvents.UpdateAFKAre
 -- Remote Functions
 local getPlayerInventoryRemoteFunc = ReplicatedStorage.RemoteFunctions.GetPlayerInventory
 local getPlayerEquippedRemoteFunc = ReplicatedStorage.RemoteFunctions.GetPlayerEquipped :: RemoteFunction
-local getPlayer
+local getPlayerAfkAreaTimeRemoteFunc = ReplicatedStorage.RemoteFunctions.GetPlayerAFKAreaTime :: RemoteFunction
 
 
 
@@ -444,9 +444,7 @@ Players.PlayerAdded:Connect(function(player)
 					teleportUtilities.TeleportPlayerToTownArea(player)
 				end)
 
-				local minutes = getPlayerAFKAreaTime(player)
-				openAfkAreaRemoteEvent:FireClient(player, 1, minutes)
-				print("afk1")
+				openAfkAreaRemoteEvent:FireClient(player, 1)
 				
 			elseif utility.getIsAFKArea2() then
 				humanoid.Died:Connect(function()
@@ -454,9 +452,7 @@ Players.PlayerAdded:Connect(function(player)
 					teleportUtilities.TeleportPlayerToTownArea(player)
 				end)
 
-				local minutes = getPlayerAFKAreaTime(player)
-				openAfkAreaRemoteEvent:FireClient(player, 2, minutes)
-				print("afk2")
+				openAfkAreaRemoteEvent:FireClient(player, 2)
 			else
 				task.wait(0.2)
 				setLevelRemoteEvent:FireClient(player, data.level)
@@ -610,6 +606,15 @@ getPlayerEquippedRemoteFunc.OnServerInvoke = function(player)
 	local equipped = getPlayerEquipped(player)
 	return equipped
 end
+
+
+getPlayerAfkAreaTimeRemoteFunc.OnServerInvoke = function(player)
+	local minutes = getPlayerAFKAreaTime(player)
+	return minutes
+end
+
+
+
 
 
 

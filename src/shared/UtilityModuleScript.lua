@@ -327,6 +327,15 @@ function module.dropToolInGame(tool, amount)
 end
 
 
+function module.getIsWholeNumber(number)
+	if number % 1 == 0 then
+		return true
+	else
+		return false
+	end
+end
+
+
 
 return module
 

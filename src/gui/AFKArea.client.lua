@@ -32,8 +32,9 @@ local closeAfkAreaRemoteEvent = ReplicatedStorage.RemoteEvents.CloseAFKArea :: R
 local resetAfkAreaTimeRemoteEvent = ReplicatedStorage.RemoteEvents.ResetAFKAreaTime :: RemoteEvent
 local updateAfkAreaTimeRemoteEvent = ReplicatedStorage.RemoteEvents.UpdateAFKAreaTime :: RemoteEvent
 
+local getPlayerAfkAreaTimeRemoteFunc = ReplicatedStorage.RemoteFunctions.GetPlayerAFKAreaTime :: RemoteFunction
+
 local afkAreaNum = 1
-local totalMinutes = 0
 
 -----------------------------
 -- FUNCTIONS --
@@ -75,6 +76,34 @@ afkGui:GetPropertyChangedSignal("Enabled"):Connect(function()
     local seconds = 0
     local rewardPlayer = false
 
+    local results = getPlayerAfkAreaTimeRemoteFunc:InvokeServer()
+    task.wait(0.5)
+    
+    if results ~= 0 then
+        
+        if utilities.getIsWholeNumber(results / 60) then
+            hours += results / 60
+        
+        else
+            local stringTime = tostring(results / 60)
+            local splitTime = stringTime:split(".")
+            local newHours = splitTime[1]
+            local newMin = splitTime[2]
+            hours += tonumber(newHours)
+
+            if newMin == "25" then
+                minutes += 15
+            elseif newMin == "5" then
+                minutes += 30
+            elseif newMin == "75" then
+                minutes += 45
+            end
+           
+        end
+    end
+    
+
+    
     while afkGui.Enabled do
         task.wait(1)
         seconds += 1
@@ -127,13 +156,17 @@ afkGui:GetPropertyChangedSignal("Enabled"):Connect(function()
         -- TODO:
         -- Fire some sort of event to teleport player to same spot in afk area to get around being kicked
         -- Fire every 15 minutes or so - roblox kicks players at 20 min inactivity
-
-        if minutes == 15 then
+        -- FIX this
+        if (minutes ~= 0 and minutes % 15 == 0 and seconds == 0) or (hours ~= 0 and ((hours * 15) + minutes) % 15 == 0 and seconds == 0) then
             updateAfkAreaTimeRemoteEvent:FireServer(15)
+            -- TODO: Show a GUI that player is teleporting to another AFK area
+            task.wait(3)
             if afkAreaNum == 1 then
                 teleportUtilities.teleportPlayerToAFKArea2(playerUtilities.GetLocalPlayer())
+                break
             elseif afkAreaNum == 2 then
                 teleportUtilities.teleportPlayerToAFKArea(playerUtilities.GetLocalPlayer())
+                break
             end
         end
 
@@ -142,11 +175,9 @@ afkGui:GetPropertyChangedSignal("Enabled"):Connect(function()
 end)
 
 
-openAfkAreaRemoteEvent.OnClientEvent:Connect(function(num, minutes)
+openAfkAreaRemoteEvent.OnClientEvent:Connect(function(num)
     -- set global variable tracking afk area
     afkAreaNum = num
-    totalMinutes = minutes
-    print(totalMinutes)
 
     afkAreaTimeLabel.Text = "00:00"
     afkAreaGoldEarnedLabel.Text = "0"
